@@ -1,0 +1,7 @@
+MIDlet-Name: Demo1_Principle_Nodes
+MIDlet-Version: 1.0.0
+MIDlet-Vendor: Oracle
+MIDlet-Description: Sample Sun SPOT Application
+MIDlet-1: Demo1_Principle_Nodes, , org.sunspotworld.Demo1_Principle_Nodes
+MicroEdition-Profile: IMP-1.0
+MicroEdition-Configuration: CLDC-1.1
