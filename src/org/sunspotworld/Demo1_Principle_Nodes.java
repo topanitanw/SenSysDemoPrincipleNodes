@@ -47,9 +47,8 @@ public class Demo1_Principle_Nodes extends MIDlet {
   private ILightSensor lsensor = (ILightSensor) Resources.lookup(ILightSensor.class);  
   // constants
   private final int BROADCAST_CONSTANT = 0xFF;
-  private final int CONNECTION_PORT = 37;
   private final String BROADCAST_ID = "0014.4F01.0000.FFFF";
-  private final String BASE_STATION_ID = "0014.4F01.0000.789B";
+  
   
   // setup values
   // specific nodes
@@ -77,6 +76,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
   private int ss_temp_reading = -1;
   private int ss_light_reading = -1;
   private Thread thread_update = null;
+  private String BASE_STATION_ID = null;
   // below node reading values
   // S:0x7EBA uses to keep S:0x79A3's values
   // S:0x7F45 uses to keep other threee nodes' values
@@ -163,7 +163,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
   {
     System.out.println("Sending the reset message to telosbs");
     Tiny_connection_pri tiny_reset = new Tiny_connection_pri(null, 
-                                                             CONNECTION_PORT, 
+                                                             Constants.CONNECTION_PORT, 
                                                              telosb_nodes);
     tiny_reset.send_reset();
     tiny_reset.close();
@@ -174,7 +174,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
   {
     // new Thread() {
     //   public void run() {
-    rx_broadcast = new Tiny_connection_pri(null, CONNECTION_PORT, telosb_nodes);
+    rx_broadcast = new Tiny_connection_pri(null, Constants.CONNECTION_PORT, telosb_nodes);
     
     while(true)
     {
@@ -192,19 +192,19 @@ public class Demo1_Principle_Nodes extends MIDlet {
         // automatically
         reset_all_setup_values();
         // get of the while loop and reset itself
-      } else if(pck_rx.get_pck_type() == 1)
+      } else if(pck_rx.get_pck_type() == 15)
       {
         // check the package type to respond
         // forward the setup data to other telosbs
-        System.out.print("setup + sensor_type: " + pck_rx.get_payload()[1] + " + broadcast");
-        Tiny_connection_pri tx_broadcast_pck1 = new Tiny_connection_pri(BROADCAST_ID, 
-                                                                        CONNECTION_PORT, 
+        System.out.println("setup + sensor_type: " + pck_rx.get_payload()[2] + " + broadcast");
+        Tiny_connection_pri tx_broadcast_pck1 = new Tiny_connection_pri(Constants.BROADCAST_ID, 
+                                                                        Constants.CONNECTION_PORT, 
                                                                         telosb_nodes);        
-        tx_broadcast_pck1.send(1, pck_rx, null);
+        tx_broadcast_pck1.send(15, pck_rx, null);
         tx_broadcast_pck1.close();
         System.out.println("Reset the old setup");
         reset_all_setup_values();
-        switch(pck_rx.get_payload()[1])
+        switch(pck_rx.get_payload()[2])
         {
           case 2:
             // prepare to receive the light reading
@@ -213,7 +213,11 @@ public class Demo1_Principle_Nodes extends MIDlet {
           
             if(cluster_no == 1)
               other_light_reading = new int[24];
+            
+            leds.getLED(7).setRGB(255, 255, 0); // yellow
+            leds.getLED(7).setOn();
             break;
+              
           case 3:
             // prepare to receive the temperature reading
             System.out.println("Prepare to receive the temp reading");              
@@ -221,31 +225,22 @@ public class Demo1_Principle_Nodes extends MIDlet {
           
             if(cluster_no == 1)
               other_temp_reading = new int[24];
-            break;
-          case 4:
-            // prepare to receive the temp10 and light reading
-            System.out.println("Prepare to receive both the light and temp reading");
-            telosb_light_reading = new int[8];
-            telosb_temp_reading = new int[8];
-
-            if(cluster_no == 1)
-            {
-              other_light_reading = new int[24];
-              other_temp_reading = new int[24];
-            }
+            
+            leds.getLED(7).setRGB(0, 0, 204); // blue
+            leds.getLED(7).setOn();            
             break;
         } // switch(sensor_type)
         
-        // let telosb nodes to update within 0.5 cycle
-        // and allow the lower clusters to send the data
-        // within 0.8 cycles
-        update_period_dis = pck_rx.get_payload()[0] / 2;
+        // update_period of both algorithms are the same
+        update_period_dis = pck_rx.get_payload()[1] / 2;
         update_period_cen = update_period_dis;
-        pck_rx.set_payload(0, pck_rx.get_payload()[0]);
-        System.out.println("delay_s: " + pck_rx.get_payload()[0]);
+        // pck_rx.set_payload(0, pck_rx.get_payload()[0]);
+        System.out.println("delay_sec: " + pck_rx.get_payload()[1]);
         // set up how to send the data back to the base station 
         // only when we receive the setup package for the first time
         rx_pck1_setup = true;
+        BASE_STATION_ID = "0014.4F01.0000." + Integer.toHexString(pck_rx.get_payload()[0]).toUpperCase();
+        System.out.println("Base station: " + BASE_STATION_ID);        
         // update the data based on the update period only
         // cluster 2 (0.4 cycle), 3 (0.4 cycle), 1 (1 cycle)
         switch(cluster_no)
@@ -274,7 +269,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
           case 0:// cluster 0 -> send the data to T:0x0202
             System.out.println("update only 8 or 9");
             tx_connection = new Tiny_connection_pri(full_addr(telosb_up_right),
-                                                    CONNECTION_PORT, 
+                                                    Constants.CONNECTION_PORT, 
                                                     telosb_nodes);
           
             thread_update = new Thread(new Periodic_Update(), 
@@ -284,7 +279,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
         thread_update.start();
         
         // save the sensor we expect to receive
-        sensor_type = pck_rx.get_payload()[1];
+        sensor_type = pck_rx.get_payload()[2];
         // leds.getLED(1).setRGB(0, 100, 0);
         leds.getLED(1).setOn();
       } else if((rx_new_pck_type == 2) && (sensor_type == rx_new_pck_type))
@@ -407,32 +402,32 @@ public class Demo1_Principle_Nodes extends MIDlet {
       pck_type1 = type1;
       pck_type2 = type2;
       cen_update = new Tiny_connection_pri(BASE_STATION_ID,
-                                           CONNECTION_PORT,
+                                           Constants.CONNECTION_PORT,
                                            null);
       
       dis_update = new Tiny_connection_pri(full_addr(telosb_up_right),
-                                           CONNECTION_PORT, 
+                                           Constants.CONNECTION_PORT, 
                                            null);
       
       dis_update_side_way = new Tiny_connection_pri(full_addr(telosb_right_side),
-                                                    CONNECTION_PORT,
+                                                    Constants.CONNECTION_PORT,
                                                     null);
     }
     
     public Periodic_Update(int type) {
       pck_type1 = type;
       cen_update = new Tiny_connection_pri(BASE_STATION_ID,
-                                           CONNECTION_PORT,
+                                           Constants.CONNECTION_PORT,
                                            null);
       dis_update = new Tiny_connection_pri(full_addr(telosb_up_right),
-                                           CONNECTION_PORT, 
+                                           Constants.CONNECTION_PORT, 
                                            null);
     }
 
     public Periodic_Update() {
       pck_type1 = 8;
       cen_update = new Tiny_connection_pri(BASE_STATION_ID,
-                                           CONNECTION_PORT,
+                                           Constants.CONNECTION_PORT,
                                            null);
     }
     
@@ -610,7 +605,6 @@ public class Demo1_Principle_Nodes extends MIDlet {
     } // public void run()
   } 
 
-
   protected void reset_all_setup_values() {
     System.out.println("Reset all setup values");    
     sensor_type = -1;
@@ -622,10 +616,12 @@ public class Demo1_Principle_Nodes extends MIDlet {
     other_light_reading = null;
     update_period_dis = -1;       
     update_period_cen = -1;
+    BASE_STATION_ID = null;    
     leds.getLED(1).setOff();
     leds.getLED(2).setOff();
     leds.getLED(3).setOff();
-    
+    leds.getLED(7).setOff();
+
     if(tx_connection != null)
     {
       tx_connection.close();
@@ -721,8 +717,8 @@ public class Demo1_Principle_Nodes extends MIDlet {
   }   
 
   static void threadMessage(String message) {
-    String threadName = Thread.currentThread().getName();
-    System.out.println("*** T: " + threadName + ": " + message);
+    String thread_name = Thread.currentThread().getName();
+    System.out.println("*** T: " + thread_name + ": " + message);
   }
   
 /**

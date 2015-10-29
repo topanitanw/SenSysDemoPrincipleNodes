@@ -77,7 +77,7 @@ public class Tiny_connection_pri
       {
         System.out.println("$TC Open Broadcast port: " + String.valueOf(port));
         // broadcast the threshold
-        tiny_connection = (TinyOSRadioConnection) Connector.open("tinyos://:37");
+        tiny_connection = (TinyOSRadioConnection) Connector.open("tinyos://:" + port);
         // Then, we ask for a datagram with the maximum size allowed
         dg = tiny_connection.newDatagram(tiny_connection.getMaximumLength());
         is_broadcast = true;
@@ -184,6 +184,12 @@ public class Tiny_connection_pri
             dg.writeByte(13);
             dg.writeShort(pck_rx.get_payload()[0]);
             System.out.println("done write data to dg and sending");
+            break;
+              
+          case 15:
+            dg.writeByte(15);
+            for(int i = 0; i < Constants.VALUE_SIZE; i++)
+              dg.writeShort(pck_rx.get_payload()[i]);
             break;
         }
         tiny_connection.send(dg);
@@ -313,6 +319,13 @@ public class Tiny_connection_pri
         int[] temp = new int[1];
         temp[0] = dg.readShort();
         res = new Rx_package(pck_type, 0, dest_addr, temp);
+        
+      } else if(pck_type == 15)
+      { // setup package
+        int[] temp = new int[Constants.VALUE_SIZE];
+        for(int i = 0; i < Constants.VALUE_SIZE; i++)
+            temp[i] = dg.readShort();
+        res = new Rx_package(pck_type, node_index, dest_addr, temp);
       }
     } catch (IOException e) {
       System.out.println("$TC Nothing Received");
