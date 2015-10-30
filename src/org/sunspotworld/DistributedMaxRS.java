@@ -80,16 +80,21 @@ public class DistributedMaxRS {
         
         //setting up the objects for once
         for(int i=0; i<9; i++){
-            short id = myObjectIds.get(i);
-            Point p = Constants.getNodeLocation(id);
-            myObjects.add(new Object(p.x, p.y, currentValues.get(id)));
+            Short id = (Short)myObjectIds.elementAt(i);
+            Point p = Constants.getNodeLocation(id.shortValue());
+            Short weight = (Short)currentValues.elementAt(id.shortValue());
+            myObjects.addElement(new Object(p.x, p.y, weight.shortValue()));
         }
         
-        Vector<Object> myObects_sorted = (Vector<Object>) myObjects.clone();
+        Vector myObects_sorted = new Vector();
+        for(int c=0; c<myObjects.size(); c++){
+            myObects_sorted.addElement(myObjects.elementAt(c));
+        }
         //sort the objects, add the rectangles
-        Collections.sort(myObects_sorted);
-        for(Object obj : myObects_sorted){
-               myRectangles.add(new Rectangle((short)Math.max(0, obj.x - coverage.width/2),
+        //Collections.sort(myObects_sorted);
+        for(int c=0; c<myObjects.size(); c++){
+               Object obj = (Object) myObects_sorted.elementAt(c);
+               myRectangles.addElement(new Rectangle((short)Math.max(0, obj.x - coverage.width/2),
                                                 (short)Math.max(0, obj.y - coverage.height/2),
                                                 (short)Math.min(area.width,
                                                          obj.x + coverage.width/2),
@@ -100,34 +105,35 @@ public class DistributedMaxRS {
         
     }
  
-    static void initializeC_0(Vector<Short> myObjectIds, Vector<Object> myObjects, Vector<Rectangle> myRectangles, DistSlabfile osf, short coverage_height){
+    static void initializeC_0(Vector myObjectIds, Vector myObjects, Vector myRectangles, DistSlabfile osf, short coverage_height){
         //hard-coded ids for each cluster
-        myObjectIds.add((short)0);
-        myObjectIds.add((short)1);
-        myObjectIds.add((short)2);
-        myObjectIds.add((short)6);
-        myObjectIds.add((short)7);  //myid
-        myObjectIds.add((short)8);
-        myObjectIds.add((short)12);
-        myObjectIds.add((short)13);
-        myObjectIds.add((short)14);
+        myObjectIds.addElement(new Short((short)0));
+        myObjectIds.addElement(new Short((short)1));
+        myObjectIds.addElement(new Short((short)2));
+        myObjectIds.addElement(new Short((short)6));
+        myObjectIds.addElement(new Short((short)7));  //myid
+        myObjectIds.addElement(new Short((short)8));
+        myObjectIds.addElement(new Short((short)12));
+        myObjectIds.addElement(new Short((short)13));
+        myObjectIds.addElement(new Short((short)14));
         
         //object id-s from cluster-2
-        myObjectIds.add((short)18);
-        myObjectIds.add((short)19);
-        myObjectIds.add((short)20);
-        myObjectIds.add((short)24);
-        myObjectIds.add((short)25);  //c-2 principal id
-        myObjectIds.add((short)26);
-        myObjectIds.add((short)30);
-        myObjectIds.add((short)31);
-        myObjectIds.add((short)32);
+        myObjectIds.addElement(new Short((short)18));
+        myObjectIds.addElement(new Short((short)19));
+        myObjectIds.addElement(new Short((short)20));
+        myObjectIds.addElement(new Short((short)24));
+        myObjectIds.addElement(new Short((short)25));  //c-2 principal id
+        myObjectIds.addElement(new Short((short)26));
+        myObjectIds.addElement(new Short((short)30));
+        myObjectIds.addElement(new Short((short)31));
+        myObjectIds.addElement(new Short((short)32));
         
         //setting up the objects for once
         for(int i=0; i<9; i++){
-            short id = myObjectIds.get(i);
-            Point p = Constants.getNodeLocation(id);
-            myObjects.add(new Object(p.x, p.y, currentValues.get(id)));
+            Short id = (Short)myObjectIds.elementAt(i);
+            Point p = Constants.getNodeLocation(id.shortValue());
+            Short value = (Short)currentValues.elementAt(id.shortValue());
+            myObjects.addElement(new Object(p.x, p.y, value.shortValue()));
         }
         //Add adjustments, meaning newobjects here
         //from cluster-2
@@ -136,16 +142,22 @@ public class DistributedMaxRS {
         int limit = (coverage.height/Constants.GAP_HEIGHT)<=3?(coverage.height/Constants.GAP_HEIGHT):3;
         for(int k=0; k<limit; k++){
             for(;i<(3 *(4+k));i++){
-                Point obj = Constants.getNodeLocation(myObjectIds.get(i));
-                myObjects.add(new Object(obj.x, obj.y, osf.neededValues.get(j++)));            
+                Short id=(Short) myObjectIds.elementAt(i);
+                Point obj = Constants.getNodeLocation(id.shortValue());
+                Short value = (Short)osf.neededValues.elementAt(j++);
+                myObjects.addElement(new Object(obj.x, obj.y, value.shortValue()));            
              }
         }        
         
-        Vector<Object> myObects_sorted = (Vector<Object>) myObjects.clone();
+        Vector myObects_sorted = new Vector();
+        for(int c=0; c<myObjects.size(); c++){
+            myObects_sorted.addElement(myObjects.elementAt(c));
+        }
         //sort the objects, add the rectangles
-        Collections.sort(myObects_sorted);
-        for(Object obj : myObects_sorted){
-               myRectangles.add(new Rectangle((short)Math.max(0, obj.x - coverage.width/2),
+        //Collections.sort(myObects_sorted);
+        for(int c=0; c<myObjects.size(); c++){
+              Object obj = (Object) myObects_sorted.elementAt(c);
+               myRectangles.addElement(new Rectangle((short)Math.max(0, obj.x - coverage.width/2),
                                                 (short)Math.max(0, obj.y - coverage.height/2),
                                                 (short)Math.min(area.width,
                                                          obj.x + coverage.width/2),
@@ -155,37 +167,38 @@ public class DistributedMaxRS {
         }
     }
     
-    static void initializeC_3(Vector<Short> myObjectIds, Vector<Object> myObjects, Vector<Rectangle> myRectangles, DistSlabfile osf, short coverage_width){
+    static void initializeC_3(Vector myObjectIds, Vector myObjects, Vector myRectangles, DistSlabfile osf, short coverage_width){
         //hard-coded ids for each cluster
-        myObjectIds.add((short)21);
-        myObjectIds.add((short)22);
-        myObjectIds.add((short)23);
-        myObjectIds.add((short)27);
-        myObjectIds.add((short)28);  //myid
-        myObjectIds.add((short)29);
-        myObjectIds.add((short)33);
-        myObjectIds.add((short)34);
-        myObjectIds.add((short)35);
+        myObjectIds.addElement(new Short((short)21));
+        myObjectIds.addElement(new Short((short)22));
+        myObjectIds.addElement(new Short((short)23));
+        myObjectIds.addElement(new Short((short)27));
+        myObjectIds.addElement(new Short((short)28));  //myid
+        myObjectIds.addElement(new Short((short)29));
+        myObjectIds.addElement(new Short((short)33));
+        myObjectIds.addElement(new Short((short)34));
+        myObjectIds.addElement(new Short((short)35));
         
         //object id-s from cluster-2
                                             
-        myObjectIds.add((short)20);
-        myObjectIds.add((short)26);
-        myObjectIds.add((short)32);
-        myObjectIds.add((short)19);    
-        myObjectIds.add((short)25);  //c-2 principal id 
-        myObjectIds.add((short)31);
-        myObjectIds.add((short)18);   
-        myObjectIds.add((short)24);
-        myObjectIds.add((short)30);
+        myObjectIds.addElement(new Short((short)20));
+        myObjectIds.addElement(new Short((short)26));
+        myObjectIds.addElement(new Short((short)32));
+        myObjectIds.addElement(new Short((short)19));    
+        myObjectIds.addElement(new Short((short)25));  //c-2 principal id 
+        myObjectIds.addElement(new Short((short)31));
+        myObjectIds.addElement(new Short((short)18));   
+        myObjectIds.addElement(new Short((short)24));
+        myObjectIds.addElement(new Short((short)30));
 
 
 
         //setting up the objects for once
         for(int i=0; i<9; i++){
-            short id = myObjectIds.get(i);
-            Point p = Constants.getNodeLocation(id);
-            myObjects.add(new Object(p.x, p.y, currentValues.get(id)));
+            Short id = (Short)myObjectIds.elementAt(i);
+            Point p = Constants.getNodeLocation(id.shortValue());
+            Short val = (Short)currentValues.elementAt(id.shortValue());
+            myObjects.addElement(new Object(p.x, p.y, val.shortValue()));
         }
         //Add adjustments, meaning new objects here
         //from cluster-2
@@ -194,17 +207,23 @@ public class DistributedMaxRS {
         int limit = (coverage.width/Constants.GAP_WIDTH)<=3?(coverage.width/Constants.GAP_WIDTH):3;
         for(int k=0; k<limit; k++){
              for(;i<(3 *(4+k));i++){
-                Point obj = Constants.getNodeLocation(myObjectIds.get(i));
-                myObjects.add(new Object(obj.x, obj.y, osf.neededValues.get(j++)));               
+                Short id = (Short)myObjectIds.elementAt(i);
+                Point p = Constants.getNodeLocation(id.shortValue());
+                Short val = (Short)osf.neededValues.elementAt(j++);
+                myObjects.addElement(new Object(p.x, p.y, val.shortValue()));               
              }
         }        
         
         
-        Vector<Object> myObects_sorted = (Vector<Object>) myObjects.clone();
+        Vector myObects_sorted = new Vector();
+        for(int c=0; c<myObjects.size(); c++){
+            myObects_sorted.addElement(myObjects.elementAt(c));
+        }
         //sort the objects, add the rectangles
-        Collections.sort(myObects_sorted);
-        for(Object obj : myObects_sorted){
-               myRectangles.add(new Rectangle((short)Math.max(0, obj.x - coverage.width/2),
+        //Collections.sort(myObects_sorted);
+        for(int c=0; c<myObjects.size(); c++){
+               Object obj = (Object) myObects_sorted.elementAt(c);
+               myRectangles.addElement(new Rectangle((short)Math.max(0, obj.x - coverage.width/2),
                                                 (short)Math.max(0, obj.y - coverage.height/2),
                                                 (short)Math.min(area.width,
                                                          obj.x + coverage.width/2),
@@ -215,56 +234,57 @@ public class DistributedMaxRS {
        
     }
     
-    static void initializeC_1(Vector<Short> myObjectIds, Vector<Object> myObjects, Vector<Rectangle> myRectangles, DistSlabfile osf1, DistSlabfile osf2, short coverage_height, short coverage_width){
+    static void initializeC_1(Vector myObjectIds, Vector myObjects, Vector myRectangles, DistSlabfile osf1, DistSlabfile osf2, short coverage_height, short coverage_width){
         //hard-coded ids for each cluster
-        myObjectIds.add((short)3);
-        myObjectIds.add((short)4);
-        myObjectIds.add((short)5);
-        myObjectIds.add((short)9);
-        myObjectIds.add((short)10);  //myid
-        myObjectIds.add((short)11);
-        myObjectIds.add((short)15);
-        myObjectIds.add((short)16);
-        myObjectIds.add((short)17);
+        myObjectIds.addElement(new Short((short)3));
+        myObjectIds.addElement(new Short((short)4));
+        myObjectIds.addElement(new Short((short)5));
+        myObjectIds.addElement(new Short((short)9));
+        myObjectIds.addElement(new Short((short)10));  //myid
+        myObjectIds.addElement(new Short((short)11));
+        myObjectIds.addElement(new Short((short)15));
+        myObjectIds.addElement(new Short((short)16));
+        myObjectIds.addElement(new Short((short)17));
         
         //ids from cluster - 0 (left)
-        myObjectIds.add((short)2);
-        myObjectIds.add((short)8);
-        myObjectIds.add((short)14);
-        myObjectIds.add((short)1);
-        myObjectIds.add((short)7);  //myid
-        myObjectIds.add((short)13);
-        myObjectIds.add((short)0);
-        myObjectIds.add((short)6);
-        myObjectIds.add((short)12);
+        myObjectIds.addElement(new Short((short)2));
+        myObjectIds.addElement(new Short((short)8));
+        myObjectIds.addElement(new Short((short)14));
+        myObjectIds.addElement(new Short((short)1));
+        myObjectIds.addElement(new Short((short)7));  //myid
+        myObjectIds.addElement(new Short((short)13));
+        myObjectIds.addElement(new Short((short)0));
+        myObjectIds.addElement(new Short((short)6));
+        myObjectIds.addElement(new Short((short)12));
         
         //ids from cluster - 3
-        myObjectIds.add((short)21);
-        myObjectIds.add((short)22);
-        myObjectIds.add((short)23);
-        myObjectIds.add((short)27);
-        myObjectIds.add((short)28);  //myid
-        myObjectIds.add((short)29);
-        myObjectIds.add((short)33);
-        myObjectIds.add((short)34);
-        myObjectIds.add((short)35);
+        myObjectIds.addElement(new Short((short)21));
+        myObjectIds.addElement(new Short((short)22));
+        myObjectIds.addElement(new Short((short)23));
+        myObjectIds.addElement(new Short((short)27));
+        myObjectIds.addElement(new Short((short)28));  //myid
+        myObjectIds.addElement(new Short((short)29));
+        myObjectIds.addElement(new Short((short)33));
+        myObjectIds.addElement(new Short((short)34));
+        myObjectIds.addElement(new Short((short)35));
         
         //ids from cluster - 2
-        myObjectIds.add((short)20);
-        myObjectIds.add((short)26);
-        myObjectIds.add((short)32);
-        myObjectIds.add((short)19);    
-        myObjectIds.add((short)25);  //c-2 principal id 
-        myObjectIds.add((short)31);
-        myObjectIds.add((short)18);   
-        myObjectIds.add((short)24);
-        myObjectIds.add((short)30);
+        myObjectIds.addElement(new Short((short)20));
+        myObjectIds.addElement(new Short((short)26));
+        myObjectIds.addElement(new Short((short)32));
+        myObjectIds.addElement(new Short((short)19));    
+        myObjectIds.addElement(new Short((short)25));  //c-2 principal id 
+        myObjectIds.addElement(new Short((short)31));
+        myObjectIds.addElement(new Short((short)18));   
+        myObjectIds.addElement(new Short((short)24));
+        myObjectIds.addElement(new Short((short)30));
         
         //setting up the objects for once
         for(int i=0; i<9; i++){
-            short id = myObjectIds.get(i);
-            Point p = Constants.getNodeLocation(id);
-            myObjects.add(new Object(p.x, p.y, currentValues.get(id)));
+            Short id = (Short)myObjectIds.elementAt(i);
+            Point p = Constants.getNodeLocation(id.shortValue());
+            Short val = (Short)currentValues.elementAt(id.shortValue());
+            myObjects.addElement(new Object(p.x, p.y, val.shortValue()));
         }
         
         //Add adjustments, meaning new rectangles here
@@ -274,8 +294,10 @@ public class DistributedMaxRS {
         int limit = (coverage.width/Constants.GAP_WIDTH)<=3?(coverage.width/Constants.GAP_WIDTH):3;
         for(int k=0; k<limit; k++){
              for(;i<(3 *(4+k));i++){
-                Point obj = Constants.getNodeLocation(myObjectIds.get(i));
-                myObjects.add(new Object(obj.x, obj.y, osf1.neededValues.get(j++)));               
+                Short id = (Short)myObjectIds.elementAt(i);
+                Point obj = Constants.getNodeLocation(id.shortValue());
+                Short val = (Short)osf1.neededValues.elementAt(j++);
+                myObjects.addElement(new Object(obj.x, obj.y, val.shortValue()));               
              }
         }
 
@@ -285,8 +307,10 @@ public class DistributedMaxRS {
         limit=(coverage.height/Constants.GAP_HEIGHT)<=3?(coverage.height/Constants.GAP_HEIGHT):3;
         for(int k=0; k<limit; k++){
             for(;i<(3 *(7+k));i++){
-                Point obj = Constants.getNodeLocation(myObjectIds.get(i));
-                myObjects.add(new Object(obj.x, obj.y, osf2.neededValues.get(j++)));              
+                Short id = (Short)myObjectIds.elementAt(i);
+                Point obj = Constants.getNodeLocation(id.shortValue());
+                Short val = (Short)osf2.neededValues.elementAt(j++);
+                myObjects.addElement(new Object(obj.x, obj.y, val.shortValue()));               
              }
         }
 
@@ -296,17 +320,22 @@ public class DistributedMaxRS {
         System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
         for(i=0; i<limit2; i++){
             for(short p=0;p<k; p++){
-                Point obj = Constants.getNodeLocation(myObjectIds.get(27+(i*3+p)));
-                System.out.println(osf2.neededValues.get(j));
-                myObjects.add(new Object(obj.x, obj.y, osf2.neededValues.get(j++)));   
+                Short id = (Short)myObjectIds.elementAt(27+(i*3+p));
+                Point obj = Constants.getNodeLocation(id.shortValue());
+                Short val = (Short)osf2.neededValues.elementAt(j++);
+                myObjects.addElement(new Object(obj.x, obj.y, val.shortValue()));   
             }
         }    
         
-        Vector<Object> myObects_sorted = (Vector<Object>) myObjects.clone();
+        Vector myObects_sorted = new Vector();
+        for(int c=0; c<myObjects.size(); c++){
+            myObects_sorted.addElement(myObjects.elementAt(c));
+        }
         //sort the objects, add the rectangles
-        Collections.sort(myObects_sorted);
-        for(Object obj : myObects_sorted){       
-               myRectangles.add(new Rectangle((short)Math.max(0, obj.x - coverage.width/2),
+        //Collections.sort(myObects_sorted);
+        for(int c=0; c<myObjects.size(); c++){
+               Object obj = (Object) myObects_sorted.elementAt(c);     
+               myRectangles.addElement(new Rectangle((short)Math.max(0, obj.x - coverage.width/2),
                                                 (short)Math.max(0, obj.y - coverage.height/2),
                                                 (short)Math.min(area.width,
                                                          obj.x + coverage.width/2),
@@ -317,65 +346,76 @@ public class DistributedMaxRS {
     }
     
     static DistSlabfile[] processingC_2(){
-        Vector<Short> myObjectIds = new Vector<Short>();
-        Vector<Object> myObjects = new Vector<Object>();
-        Vector<Rectangle> myRectangles = new Vector<Rectangle>();
-        Hashtable<Short, Window> slabFile = new Hashtable<Short, Window>();
+        Vector myObjectIds = new Vector();
+        Vector myObjects = new Vector();
+        Vector myRectangles = new Vector();
+        Hashtable slabFile = new Hashtable();
         Meit meit = new Meit();
         initializeC_2(myObjectIds, myObjects, myRectangles);
-        Vector<Short> aListOfX1 = new Vector<Short>();
+        Vector aListOfX1 = new Vector();
         for(int i = 0; i < myRectangles.size(); i++)
         {
-           aListOfX1.add(myRectangles.get(i).x1);
-           aListOfX1.add(myRectangles.get(i).x2);
+           Rectangle rect = (Rectangle)myRectangles.elementAt(i);
+           aListOfX1.addElement(new Short(rect.x1));
+           aListOfX1.addElement(new Short(rect.x2));
         }
         
-        Collections.sort(aListOfX1);
-        Vector<Short> aListOfX = new Vector<Short>(); // xs in python code
-        for(Short d : aListOfX1)
-        {
-          if(!aListOfX.contains(d))
-              aListOfX.add(d);
+        //Collections.sort(aListOfX1);
+        Vector aListOfX = new Vector(); // xs in python code
+        for(int c=0; c<aListOfX1.size(); c++){
+            Short d = (Short)aListOfX1.elementAt(c);
+            if(!aListOfX.contains(d))
+               aListOfX.addElement(d);
         }
         
         IntervalTree root = meit.buildIntervalTree(0, aListOfX.size()-1, aListOfX, null);
         System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         meit.preOrderTraverse(root);
         meit.interval_tree_root = root;
-        root.window = new Window(aListOfX.get(0), aListOfX.get(aListOfX.size() - 1),
+        Short first = (Short)aListOfX.elementAt(0);
+        Short last = (Short)aListOfX.elementAt(aListOfX.size() - 1);
+        root.window = new Window(first.shortValue(), last.shortValue(),
                                (short) 0, (short) 0);
 
         slabFile= meit.maxEnclosing(myRectangles, coverage, root);
         System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"); 
         
-        Vector<Window> hintervals = new Vector<Window>();
-        for(short sfk : slabFile.keySet()){
-            Window sf = (Window) slabFile.get(sfk);
-            hintervals.add(sf);
+        Vector hintervals = new Vector();
+        Short sfk;
+        while( (sfk = (Short)slabFile.keys().nextElement()) !=null){
+            Window sf = (Window) slabFile.get(sfk); 
+            hintervals.addElement(sf);
         }
-        Collections.sort(hintervals);
-        for(Window h : hintervals){
+        
+        //Collections.sort(hintervals);
+       /* for(Window h : hintervals){
             System.out.println(h.h+"-----"+h.l+ " "+h.r+" "+h.score);
-        }
+        }*/
         //System.out.println("optimal_window score l r h: " + optimal_window.score + " " + optimal_window.l + " " + optimal_window.r + " " + optimal_window.h);
 
         //meit.writeOutput("cl-2.txt", area, coverage, myObjects, optimal_window);
-        Vector<Short> values = new Vector<Short>();
+        Vector values = new Vector();
         int limit = (coverage.height/Constants.GAP_HEIGHT)<=3?(coverage.height/Constants.GAP_HEIGHT):3;
         short j=0;
         for(int k=0; k<limit; k++){
-            values.add(myObjects.get(j++).weight);
-            values.add(myObjects.get(j++).weight);
-            values.add(myObjects.get(j++).weight);
+            Object obj = (Object)myObjects.elementAt(j++);
+            values.addElement(new Short(obj.weight));
+            obj = (Object)myObjects.elementAt(j++);
+            values.addElement(new Short(obj.weight));
+            obj = (Object)myObjects.elementAt(j++);
+            values.addElement(new Short(obj.weight));
         }
         
-        Vector<Short> values1 = new Vector<Short>();
+        Vector values1 = new Vector();
         j=2;
         limit = (coverage.width/Constants.GAP_WIDTH)<=3?(coverage.width/Constants.GAP_WIDTH):3;
         for(int k=0; k<limit; k++, j--){
-            values1.add(myObjects.get(j).weight);
-            values1.add(myObjects.get(j+3).weight);
-            values1.add(myObjects.get(j+6).weight);
+            Object obj = (Object)myObjects.elementAt(j);
+            values1.addElement(new Short(obj.weight));
+            obj = (Object)myObjects.elementAt(j+3);
+            values1.addElement(new Short(obj.weight));
+            obj = (Object)myObjects.elementAt(j+6);
+            values1.addElement(new Short(obj.weight));
         }
         
         DistSlabfile[] result = new DistSlabfile[2];
@@ -386,64 +426,73 @@ public class DistributedMaxRS {
     }
     
     static DistSlabfile processingC_0(DistSlabfile osf){
-        Vector<Short> myObjectIds = new Vector<Short>();
-        Vector<Object> myObjects = new Vector<Object>();
-        Vector<Rectangle> myRectangles = new Vector<Rectangle>();
-        Hashtable<Short, Window> slabFile = new Hashtable<Short, Window>();
+        Vector myObjectIds = new Vector();
+        Vector myObjects = new Vector();
+        Vector  myRectangles = new Vector();
+        Hashtable slabFile = new Hashtable();
         Meit meit = new Meit();
         short coverage_height=(short)Math.min((Constants.getNodeLocation((short)12).y+ (coverage.height/2)), area.height);
         
         initializeC_0(myObjectIds, myObjects, myRectangles, osf, coverage_height);
         
-        Vector<Short> aListOfX1 = new Vector<Short>();
+       Vector aListOfX1 = new Vector();
         for(int i = 0; i < myRectangles.size(); i++)
         {
-           aListOfX1.add(myRectangles.get(i).x1);
-           aListOfX1.add(myRectangles.get(i).x2);
+           Rectangle rect = (Rectangle)myRectangles.elementAt(i);
+           aListOfX1.addElement(new Short(rect.x1));
+           aListOfX1.addElement(new Short(rect.x2));
         }
         
-        Collections.sort(aListOfX1);
-        Vector<Short> aListOfX = new Vector<Short>(); // xs in python code
-        for(Short d : aListOfX1)
-        {
-          if(!aListOfX.contains(d))
-              aListOfX.add(d);
+        //Collections.sort(aListOfX1);
+        Vector aListOfX = new Vector(); // xs in python code
+        for(int c=0; c<aListOfX1.size(); c++){
+            Short d = (Short)aListOfX1.elementAt(c);
+            if(!aListOfX.contains(d))
+               aListOfX.addElement(d);
         }
         
         IntervalTree root = meit.buildIntervalTree(0, aListOfX.size()-1, aListOfX, null);
         System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         meit.preOrderTraverse(root);
         meit.interval_tree_root = root;
-        root.window = new Window(aListOfX.get(0), aListOfX.get(aListOfX.size() - 1),
+        Short first = (Short)aListOfX.elementAt(0);
+        Short last = (Short)aListOfX.elementAt(aListOfX.size() - 1);
+        root.window = new Window(first.shortValue(), last.shortValue(),
                                (short) 0, (short) 0);
 
         slabFile= meit.maxEnclosing(myRectangles, coverage, root);
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"); 
         
-        Vector<Window> hintervals = new Vector<Window>();
-        for(short sfk : slabFile.keySet()){
-            Window sf = (Window) slabFile.get(sfk);
-            hintervals.add(sf);
+        Vector hintervals = new Vector();
+        Short sfk;
+        while( (sfk = (Short)slabFile.keys().nextElement()) !=null){
+            Window sf = (Window) slabFile.get(sfk); 
+            hintervals.addElement(sf);
         }
+        
         //adding from previous slab
-        for(Window sf :  osf.hintervals){
+        for(int c=0; c<osf.hintervals.size(); c++){
+            Window sf = (Window) osf.hintervals.elementAt(c);
             if(sf.h>=coverage_height){
-                hintervals.add(sf);
+                hintervals.addElement(sf);
             }
         }
-        
-        Collections.sort(hintervals);
-        for(Window h : hintervals){
+        //Collections.sort(hintervals);
+       /* for(Window h : hintervals){
             System.out.println(h.h+"-----"+h.l+ " "+h.r+" "+h.score);
-        }
+        }*/
+       
         
-        Vector<Short> values = new Vector<Short>();
+        Vector values = new Vector();
         short j=2;
         int limit = (coverage.width/Constants.GAP_WIDTH)<=3?(coverage.width/Constants.GAP_WIDTH):3;
         for(int k=0; k<limit; k++, j--){
-            values.add(myObjects.get(j).weight);
-            values.add(myObjects.get(j+3).weight);
-            values.add(myObjects.get(j+6).weight);
+            Object obj = (Object)myObjects.elementAt(j);
+            values.addElement(new Short(obj.weight));
+            obj = (Object)myObjects.elementAt(j+3);
+            values.addElement(new Short(obj.weight));
+            obj = (Object)myObjects.elementAt(j+6);
+            values.addElement(new Short(obj.weight));
         }
         
         DistSlabfile result = new DistSlabfile(hintervals, values);
@@ -451,71 +500,72 @@ public class DistributedMaxRS {
     }
 
     static DistSlabfile processingC_3(DistSlabfile osf){
-        Vector<Short> myObjectIds = new Vector<Short>();
-        Vector<Object> myObjects = new Vector<Object>();
-        Vector<Rectangle> myRectangles = new Vector<Rectangle>();
-        Hashtable<Short, Window> slabFile = new Hashtable<Short, Window>();
+        Vector myObjectIds = new Vector();
+        Vector myObjects = new Vector();
+        Vector myRectangles = new Vector();
+        Hashtable slabFile = new Hashtable();
         Meit meit = new Meit();
         short coverage_width=(short)Math.max((Constants.getNodeLocation((short)21).x-(coverage.width/2)), 0);
         
         initializeC_3(myObjectIds, myObjects, myRectangles, osf, coverage_width);
 
-        Vector<Short> aListOfX1 = new Vector<Short>();
+        
+       Vector aListOfX1 = new Vector();
         for(int i = 0; i < myRectangles.size(); i++)
         {
-           aListOfX1.add(myRectangles.get(i).x1);
-           aListOfX1.add(myRectangles.get(i).x2);
+           Rectangle rect = (Rectangle)myRectangles.elementAt(i);
+           aListOfX1.addElement(new Short(rect.x1));
+           aListOfX1.addElement(new Short(rect.x2));
         }
         
-        Collections.sort(aListOfX1);
-        Vector<Short> aListOfX = new Vector<Short>(); // xs in python code
-        for(Short d : aListOfX1)
-        {
-          if(!aListOfX.contains(d))
-              aListOfX.add(d);
+        //Collections.sort(aListOfX1);
+        Vector aListOfX = new Vector(); // xs in python code
+        for(int c=0; c<aListOfX1.size(); c++){
+            Short d = (Short)aListOfX1.elementAt(c);
+            if(!aListOfX.contains(d))
+               aListOfX.addElement(d);
         }
-
+        
         IntervalTree root = meit.buildIntervalTree(0, aListOfX.size()-1, aListOfX, null);
         System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         meit.preOrderTraverse(root);
         meit.interval_tree_root = root;
-        root.window = new Window(aListOfX.get(0), aListOfX.get(aListOfX.size() - 1),
+        Short first = (Short)aListOfX.elementAt(0);
+        Short last = (Short)aListOfX.elementAt(aListOfX.size() - 1);
+        root.window = new Window(first.shortValue(), last.shortValue(),
                                (short) 0, (short) 0);
 
         slabFile= meit.maxEnclosing(myRectangles, coverage, root);
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"); 
         
-        Vector<Window> hintervals = new Vector<Window>();
-        for(short sfk : slabFile.keySet()){
-            Window sf = (Window) slabFile.get(sfk);
-            hintervals.add(sf);
-        }        
-
-        //adding from previous slab
-        /*for(Window sf :  osf.hintervals){
-            if(sf.h>=coverage_height){
-                hintervals.add(sf);
-            }
-        }*/
-        
-        Collections.sort(hintervals);
-        for(Window h : hintervals){
-            System.out.println(h.h+"-----"+h.l+ " "+h.r+" "+h.score);
+        Vector hintervals = new Vector();
+        Short sfk;
+        while( (sfk = (Short)slabFile.keys().nextElement()) !=null){
+            Window sf = (Window) slabFile.get(sfk); 
+            hintervals.addElement(sf);
         }
+           //Collections.sort(hintervals);
+       /* for(Window h : hintervals){
+            System.out.println(h.h+"-----"+h.l+ " "+h.r+" "+h.score);
+        }*/     
         
-        Vector<Short> values = new Vector<Short>();
+        Vector values = new Vector();
         short j=0;
         int limit = (coverage.height/Constants.GAP_HEIGHT)<=3?(coverage.height/Constants.GAP_HEIGHT):3;
         for(int k=0; k<limit; k++){
-            values.add(myObjects.get(j++).weight);
-            values.add(myObjects.get(j++).weight);
-            values.add(myObjects.get(j++).weight);
+            Object obj = (Object)myObjects.elementAt(j++);
+            values.addElement(new Short(obj.weight));
+            obj = (Object)myObjects.elementAt(j++);
+            values.addElement(new Short(obj.weight));
+            obj = (Object)myObjects.elementAt(j++);
+            values.addElement(new Short(obj.weight));
         }
         
         int limit2 = (coverage.width/Constants.GAP_WIDTH)<=3?(coverage.width/Constants.GAP_WIDTH):3;       
         for(int i=0; i<limit2; i++){
             for(j=0;j<limit; j++){
-                values.add(myObjects.get(9+(i*3+j)).weight);
+                Object obj = (Object)myObjects.elementAt(9+(i*3+j));
+                values.addElement(new Short(obj.weight));
             }
         }
         
@@ -524,76 +574,84 @@ public class DistributedMaxRS {
     }
     
     static Window processingC_1(DistSlabfile osf1,DistSlabfile osf2){
-        Vector<Short> myObjectIds = new Vector<Short>();
-        Vector<Object> myObjects = new Vector<Object>();
-        Vector<Rectangle> myRectangles = new Vector<Rectangle>();
-        Hashtable<Short, Window> slabFile = new Hashtable<Short, Window>();
+        Vector myObjectIds = new Vector();
+        Vector myObjects = new Vector();
+        Vector myRectangles = new Vector();
+        Hashtable slabFile = new Hashtable();
         Meit meit = new Meit();
         short coverage_width=(short)Math.max((Constants.getNodeLocation((short)3).x-(coverage.width/2)), 0);
         short coverage_height=(short)Math.min((Constants.getNodeLocation((short)15).y+(coverage.height/2)), area.height);
         
         initializeC_1(myObjectIds, myObjects, myRectangles, osf1, osf2, coverage_height, coverage_width);
 
-        Vector<Short> aListOfX1 = new Vector<Short>();
+        
+       Vector aListOfX1 = new Vector();
         for(int i = 0; i < myRectangles.size(); i++)
         {
-           aListOfX1.add(myRectangles.get(i).x1);
-           aListOfX1.add(myRectangles.get(i).x2);
+           Rectangle rect = (Rectangle)myRectangles.elementAt(i);
+           aListOfX1.addElement(new Short(rect.x1));
+           aListOfX1.addElement(new Short(rect.x2));
         }
         
-        Collections.sort(aListOfX1);
-        Vector<Short> aListOfX = new Vector<Short>(); // xs in python code
-        for(Short d : aListOfX1)
-        {
-          if(!aListOfX.contains(d))
-              aListOfX.add(d);
+        //Collections.sort(aListOfX1);
+        Vector aListOfX = new Vector(); // xs in python code
+        for(int c=0; c<aListOfX1.size(); c++){
+            Short d = (Short)aListOfX1.elementAt(c);
+            if(!aListOfX.contains(d))
+               aListOfX.addElement(d);
         }
         
         IntervalTree root = meit.buildIntervalTree(0, aListOfX.size()-1, aListOfX, null);
         System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         meit.preOrderTraverse(root);
         meit.interval_tree_root = root;
-        root.window = new Window(aListOfX.get(0), aListOfX.get(aListOfX.size() - 1),
+        Short first = (Short)aListOfX.elementAt(0);
+        Short last = (Short)aListOfX.elementAt(aListOfX.size() - 1);
+        root.window = new Window(first.shortValue(), last.shortValue(),
                                (short) 0, (short) 0);
 
         slabFile= meit.maxEnclosing(myRectangles, coverage, root);
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-              
-        Vector<Window> hintervals = new Vector<Window>();
-        for(short sfk : slabFile.keySet()){
-            Window sf = (Window) slabFile.get(sfk);
-            hintervals.add(sf);
-            System.out.println(sf.h+"-----"+sf.l+" "+sf.r+" "+sf.score);
+        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"); 
+        
+        Vector hintervals = new Vector();
+        Short sfk;
+        while( (sfk = (Short)slabFile.keys().nextElement()) !=null){
+            Window sf = (Window) slabFile.get(sfk); 
+            hintervals.addElement(sf);
         }
-
         System.out.println("------------------------------------------");        
         //adding from previous slab (c-3)
-        for(Window sf :  osf2.hintervals){
-            System.out.println(sf.h+"-----"+sf.l+" "+sf.r+" "+sf.score);
-            if(sf.h>=coverage_height){
-                hintervals.add(sf);
-            }
+        for(int c=0; c<osf2.hintervals.size(); c++){
+           Window sf = (Window) osf2.hintervals.elementAt(c);
+           System.out.println(sf.h+"-----"+sf.l+" "+sf.r+" "+sf.score);
+           if(sf.h>=coverage_height){
+                hintervals.addElement(sf);
+           }
         }
         System.out.println("------------------------------------------");
         //adding from previous slab (c-0)
-        for(Window sf :  osf1.hintervals){
+        for(int c=0; c<osf1.hintervals.size(); c++){
+            Window sf = (Window) osf1.hintervals.elementAt(c);
             System.out.println(sf.h+"-----"+sf.l+" "+sf.r+" "+sf.score);
             if(sf.r<=coverage_width){
-                hintervals.add(sf);
+                hintervals.addElement(sf);
             }
             else{
                 if(sf.l<coverage_width){
                     sf.r=coverage_width;
-                    hintervals.add(sf);
+                    hintervals.addElement(sf);
                 }
             }
         }
         
-        Collections.sort(hintervals);
+        //Collections.sort(hintervals);
+       /* for(Window h : hintervals){
+            System.out.println(h.h+"-----"+h.l+ " "+h.r+" "+h.score);
+        }*/
         Window opt_window = new Window((short)0, (short)0, (short)0, (short)0); 
-        for(Window h : hintervals){
-            //System.out.println(h.h+"-----"+h.l+" "+h.r+" "+h.score);
-            if(h.score>opt_window.score){
+        for(int c=0; c<hintervals.size(); c++){
+            Window h = (Window) hintervals.elementAt(c);
+           if(h.score>opt_window.score){
                 opt_window = h;
             }
         }
