@@ -190,17 +190,21 @@ public class Meit
         if(slabFile.containsKey(curh)){
             Window old_in = (Window)slabFile.get(curh);
             if(root.maxscore>old_in.score){
-                Window curWindow = (Window) root.target.clone();
-                curWindow.score = root.maxscore;
-                curWindow.h = curh.shortValue();
-                slabFile.put(new Short(curWindow.h), curWindow);
+                if(root.target !=null){
+                    Window curWindow = (Window) root.target.clone();
+                    curWindow.score = root.maxscore;
+                    curWindow.h = curh.shortValue();
+                    slabFile.put(new Short(curWindow.h), curWindow);   
+                }
             }
         }
         else{
-            Window curWindow = (Window) root.target.clone();
-            curWindow.score = root.maxscore;
-            curWindow.h = curh.shortValue();
-            slabFile.put(new Short(curWindow.h), curWindow);
+            if(root.target !=null){
+                Window curWindow = (Window) root.target.clone();
+                curWindow.score = root.maxscore;
+                curWindow.h = curh.shortValue();
+                slabFile.put(new Short(curWindow.h), curWindow);   
+            }
         }
         //--------------------------------------------------------------------------------------------
         if(root.maxscore > optimalWindow.score)
@@ -211,9 +215,9 @@ public class Meit
         }
         topIndex++;
 
-        if(root != null)
-          System.out.println("bot local_best: " + root.target.h + ", " + root.target.l
-                             + ", " + root.target.r + ", " + root.maxscore);
+        /*if(root != null)
+          //System.out.println("bot local_best: " + root.target.h + ", " + root.target.l
+                            + ", " + root.target.r + ", " + root.maxscore);*/
       } else
       {
         /*System.out.println("top line: y2, x1, x2, Score: " +
@@ -244,9 +248,9 @@ public class Meit
         }*/
         //--------------------------------------------------------------------------------------------
         botIndex++;
-        if(root != null)
+       /* if(root != null)
           System.out.println("top local_best: " + root.target.h + ", " + root.target.l
-                             + ", " + root.target.r + ", " + root.maxscore);
+                             + ", " + root.target.r + ", " + root.maxscore);*/
       } // end else
     } // end while
     return slabFile; 

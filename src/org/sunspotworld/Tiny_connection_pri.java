@@ -5,17 +5,17 @@
  */
 package org.sunspotworld;
 
+import com.sun.spot.io.j2me.radiogram.RadiogramConnection;
 import com.sun.spot.io.j2me.tinyos.TinyOSRadioConnection;
 import com.sun.spot.peripheral.radio.RadioFactory;
 import com.sun.spot.resources.Resources;
 import com.sun.spot.service.BootloaderListenerService;
 import com.sun.spot.util.IEEEAddress;
-
+import java.io.IOException;
+import java.util.Vector;
 import javax.microedition.io.Connector;
 import javax.microedition.io.Datagram;
 import javax.microedition.io.DatagramConnection;
-import com.sun.spot.io.j2me.radiogram.RadiogramConnection;
-import java.io.IOException;
 /**
  *
  * @author PanitanW
@@ -129,8 +129,8 @@ public class Tiny_connection_pri
             
           case 5:
             dg.writeByte(5);
-            for(int i = 0; i < pck_rx.get_payload().length; i++)
-              dg.writeShort(pck_rx.get_payload()[i]);
+            //for(int i = 0; i < pck_rx.get_payload().length; i++)
+            //  dg.writeShort(pck_rx.get_payload()[i]);
             break;
 
             // case 10:
@@ -142,26 +142,22 @@ public class Tiny_connection_pri
           case 6:
             dg.writeByte(6);
             // if sensor_type = 3, tx_broadcast.send(6, pck_rx, temp_reading);
-            for(int i = 0; i < more_data.length; i++)
+            /*for(int i = 0; i < more_data.length; i++)
               dg.writeShort(more_data[i]);
 
             for(int i = 0; i < pck_rx.get_payload().length; i++)
-              dg.writeShort(pck_rx.get_payload()[i]);
+              dg.writeShort(pck_rx.get_payload()[i]);*/
             break;
             
           case 7:
-            System.out.println("$TC send 7 1");
             dg.writeByte(7);
-            System.out.println("$TC send 7 2");            
-            for(int i = 0; i < 8; i++)
+            /*for(int i = 0; i < 8; i++)
               dg.writeShort(more_data[i]); // cluster 0
-            System.out.println("$TC send 7 3");
             for(int i = 0; i < pck_rx.get_payload().length; i++)
               dg.writeShort(pck_rx.get_payload()[i]); // cluster 1
-            System.out.println("$TC send 7 4");
             for(int i = 8; i < more_data.length; i++)
               dg.writeShort(more_data[i]); // cluster 2 3
-            System.out.println("$TC send 7 5");
+            */
             break;
             
           case 8:
@@ -182,8 +178,6 @@ public class Tiny_connection_pri
             //   break;
           case 13:
             dg.writeByte(13);
-            dg.writeShort(pck_rx.get_payload()[0]);
-            System.out.println("done write data to dg and sending");
             break;
               
           case 15:
@@ -192,6 +186,29 @@ public class Tiny_connection_pri
               dg.writeShort(pck_rx.get_payload()[i]);
             break;
         }
+        
+        if((pck_type == 5) || (pck_type == 13) || (pck_type == 6)) {
+            DistSlabfile sl = pck_rx.get_slap_file();
+            for(int i = 0; i < sl.hintervals.size(); i++) {
+                dg.writeShort(((Window)sl.hintervals.elementAt(i)).l);
+                dg.writeShort(((Window)sl.hintervals.elementAt(i)).r);
+                dg.writeShort(((Window)sl.hintervals.elementAt(i)).h);
+                dg.writeShort(((Window)sl.hintervals.elementAt(i)).score);
+            }
+            dg.writeShort(Constants.SEPERATOR);
+            for(int j = 0; j < sl.neededValues.size(); j++) {
+                dg.writeShort(((Short)sl.neededValues.elementAt(j)).shortValue());
+            }
+            dg.writeShort(Constants.TERMINATOR);
+            
+        } else if(pck_type == 7) {
+            dg.writeShort(pck_rx.get_window().l);
+            dg.writeShort(pck_rx.get_window().r);
+            dg.writeShort(pck_rx.get_window().h);
+            dg.writeShort(pck_rx.get_window().score);
+            dg.writeShort(Constants.TERMINATOR);
+        }
+
         tiny_connection.send(dg);
         System.out.println("$TC Sent Pck type: " + pck_type + " to " + dst_addr);
         return true;
@@ -206,6 +223,7 @@ public class Tiny_connection_pri
   
   public Rx_package receive() {
     Rx_package res = null;
+    DistSlabfile sl_rx = null;
     try
     {
       dg.reset();
@@ -242,16 +260,17 @@ public class Tiny_connection_pri
       { // either light or temp sensor data 
         int[] temp = new int[1];
         temp[0] = dg.readShort();
+        node_index = (int) Constants.getNodeId(dest_addr).shortValue();
         res = new Rx_package(pck_type, node_index, dest_addr,
                              temp);
-      } else if(pck_type == 4)
+      } /*else if(pck_type == 4)
       { // both temp and light sensors
         int[] temp = new int[2];
         temp[0] = dg.readShort();
         temp[1] = dg.readShort();
         res = new Rx_package(pck_type, node_index, dest_addr,
                              temp);        
-      } else if(pck_type == 5)
+      } /*else if(pck_type == 5)
       {
         int[] temp = new int[8];
         for(int i = 0; i < temp.length; i++)
@@ -290,7 +309,7 @@ public class Tiny_connection_pri
           temp[i] = dg.readShort();
         res = new Rx_package(pck_type, 0, dest_addr, temp);
         
-      } //else if(pck_type == 12)
+      } *///else if(pck_type == 12)
       //{ // keep the node count in temp
       // node count = 8 bits
       // int[] temp = new int[33];
@@ -314,21 +333,52 @@ public class Tiny_connection_pri
           temp[i] = dg.readShort();
         res = new Rx_package(pck_type, 0, dest_addr, temp);
         
-      } else if(pck_type == 13)
+      } /**else if(pck_type == 13)
       {
         int[] temp = new int[1];
         temp[0] = dg.readShort();
         res = new Rx_package(pck_type, 0, dest_addr, temp);
         
-      } else if(pck_type == 15)
+      } */else if(pck_type == 15)
       { // setup package
         int[] temp = new int[Constants.VALUE_SIZE];
         for(int i = 0; i < Constants.VALUE_SIZE; i++)
             temp[i] = dg.readShort();
         res = new Rx_package(pck_type, node_index, dest_addr, temp);
       }
+
+        System.out.println("Read the dg");
+        if((pck_type == 5) || (pck_type == 13) || (pck_type == 6)) {
+            System.out.println("initialize the vectors");
+            Vector hiv = new Vector();
+            Vector nv = new Vector();
+            short rd_start = dg.readShort();
+            
+            while(rd_start != Constants.SEPERATOR) {
+                System.out.println("test");
+                short wl = rd_start;
+                short wr = dg.readShort(); 
+                short wh = dg.readShort(); 
+                short wscore = dg.readShort();
+                hiv.addElement(new Window(wl, wr, wh, wscore));
+                rd_start = dg.readShort();
+            }
+            System.out.println("test2");            
+            rd_start = dg.readShort();
+            while(rd_start != Constants.TERMINATOR) {
+                System.out.println("test3");                
+                nv.addElement(new Short(rd_start)); 
+                rd_start = dg.readShort();
+            }
+            sl_rx = new DistSlabfile(hiv, nv);
+            res = new Rx_package(pck_type, node_index, dest_addr, sl_rx);
+        }   
+        
+
+        
     } catch (IOException e) {
       System.out.println("$TC Nothing Received");
+      e.printStackTrace();
       res = null;
     }
     return res;

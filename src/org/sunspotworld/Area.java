@@ -20,4 +20,10 @@ public class Area
     this.height = height;
     this.width = width;
   }
+  
+  public Area(int height, int width)
+  {
+    this.height = (short) height;
+    this.width = (short) width;
+  }
 }

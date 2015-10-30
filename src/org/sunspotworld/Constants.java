@@ -37,6 +37,7 @@ public class Constants {
     public static final String BROADCAST_ID = "0014.4F01.0000.FFFF";
     public static final String[] TELOSB_NODES = {"1205"}; 
     public static final int CONNECTION_PORT = 65; 
+    public static final short SEPERATOR  = -100;
     
     public static Hashtable nodeIds= new Hashtable();
     
@@ -80,8 +81,14 @@ public class Constants {
     }
     
     public static Short getNodeId(String addr){
-        if(nodeIds.containsKey(addr))
-            return (Short) nodeIds.get(addr);
+        String addr2=addr;
+        if(addr.length()==19){
+            addr2=addr.substring(15);
+        }
+        if(nodeIds.containsKey(addr2)){
+            Integer v = (Integer)nodeIds.get(addr2);
+            return new Short((short)v.intValue());   
+        }
         return new Short((short)-1);    
     }
     

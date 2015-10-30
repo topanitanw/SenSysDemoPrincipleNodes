@@ -13,8 +13,8 @@ import java.util.Vector;
  * @author Muhammed
  */
 public class DistSlabfile {
-    Vector hintervals = new Vector();
-    Vector neededValues = new Vector();
+    Vector hintervals = new Vector();  //Window
+    Vector neededValues = new Vector();  //Short
     
     DistSlabfile(Vector hi, Vector nv){
         hintervals = hi;

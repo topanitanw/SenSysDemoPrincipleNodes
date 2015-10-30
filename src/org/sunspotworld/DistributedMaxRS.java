@@ -6,6 +6,7 @@
 
 package org.sunspotworld;
 
+import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Hashtable;
 import java.util.Random;
@@ -17,11 +18,11 @@ import java.util.Vector;
  */
 public class DistributedMaxRS {
 
-    public static Vector currentValues = new Vector();
+    public static Vector currentValues = new Vector(Constants.TOTAL_MOTES);
     public static Vector currentObjects2 = new Vector();
     public static short current_phenomena = Constants.LIGHT_PHENOMENA;
-    static Area area;
-    static Area coverage;
+    public static Area area;
+    public static Area coverage =  new Area((short)0, (short)0);
     
     /////////////////////////////////////*********** Testing Purposes ************************////////////////////////////////////
     public static Vector currentRectangle = new Vector();
@@ -92,6 +93,7 @@ public class DistributedMaxRS {
         }
         //sort the objects, add the rectangles
         //Collections.sort(myObects_sorted);
+        
         myObects_sorted=doSelectionSortvobj(myObects_sorted);       
         for(int c=0; c<myObjects.size(); c++){
                Objects obj = (Objects) myObects_sorted.elementAt(c);
@@ -349,12 +351,20 @@ public class DistributedMaxRS {
         }
     }
     
-    static DistSlabfile[] processingC_2(){
+    static void processingAll(){
+        System.out.println("Copying the processing data..");
+        for(int c=0;c<Demo1_Principle_Nodes.current_values.size(); c++){
+           currentValues.setElementAt(Demo1_Principle_Nodes.current_values.elementAt(c), c);
+        }
+    }
+    
+    public static DistSlabfile[] processingC_2(){
         Vector myObjectIds = new Vector();
         Vector myObjects = new Vector();
         Vector myRectangles = new Vector();
         Hashtable slabFile = new Hashtable();
         Meit meit = new Meit();
+        processingAll();
         initializeC_2(myObjectIds, myObjects, myRectangles);
         Vector aListOfX1 = new Vector();
         for(int i = 0; i < myRectangles.size(); i++)
@@ -382,13 +392,14 @@ public class DistributedMaxRS {
         root.window = new Window(first.shortValue(), last.shortValue(),
                                (short) 0, (short) 0);
 
-        slabFile= meit.maxEnclosing(myRectangles, coverage, root);
+        slabFile=meit.maxEnclosing(myRectangles, coverage, root);
         System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"); 
         
         Vector hintervals = new Vector();
         //Short sfk = new Short((short)0);
-        while(slabFile.keys().hasMoreElements()){
-            Short sfk = (Short)slabFile.keys().nextElement();
+        Enumeration en = slabFile.keys();
+        while(en.hasMoreElements()){
+            Short sfk = (Short)en.nextElement();
             Window sf = (Window) slabFile.get(sfk); 
             hintervals.addElement(sf);
         }
@@ -426,23 +437,24 @@ public class DistributedMaxRS {
         }
         
         DistSlabfile[] result = new DistSlabfile[2];
-        result[0] = new DistSlabfile(hintervals, values);
-        result[1] = new DistSlabfile(hintervals, values1);
+        result[0] = new DistSlabfile(hintervals, values);  /// o = c-o
+        result[1] = new DistSlabfile(hintervals, values1);  /// 1 - c-3
         
         return result;
     }
     
-    static DistSlabfile processingC_0(DistSlabfile osf){
+    public static DistSlabfile processingC_0(DistSlabfile osf){
         Vector myObjectIds = new Vector();
         Vector myObjects = new Vector();
         Vector  myRectangles = new Vector();
         Hashtable slabFile = new Hashtable();
         Meit meit = new Meit();
+        processingAll();
         short coverage_height=(short)Math.min((Constants.getNodeLocation((short)12).y+ (coverage.height/2)), area.height);
         
         initializeC_0(myObjectIds, myObjects, myRectangles, osf, coverage_height);
         
-       Vector aListOfX1 = new Vector();
+        Vector aListOfX1 = new Vector();
         for(int i = 0; i < myRectangles.size(); i++)
         {
            Rectangle rect = (Rectangle)myRectangles.elementAt(i);
@@ -472,8 +484,9 @@ public class DistributedMaxRS {
         System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"); 
         
         Vector hintervals = new Vector();
-        while(slabFile.keys().hasMoreElements()){
-            Short sfk = (Short)slabFile.keys().nextElement();
+        Enumeration en = slabFile.keys();
+        while(en.hasMoreElements()){
+            Short sfk = (Short)en.nextElement();
             Window sf = (Window) slabFile.get(sfk); 
             hintervals.addElement(sf);
         }
@@ -507,12 +520,13 @@ public class DistributedMaxRS {
         return result;
     }
 
-    static DistSlabfile processingC_3(DistSlabfile osf){
+    public static DistSlabfile processingC_3(DistSlabfile osf){
         Vector myObjectIds = new Vector();
         Vector myObjects = new Vector();
         Vector myRectangles = new Vector();
         Hashtable slabFile = new Hashtable();
         Meit meit = new Meit();
+        processingAll();
         short coverage_width=(short)Math.max((Constants.getNodeLocation((short)21).x-(coverage.width/2)), 0);
         
         initializeC_3(myObjectIds, myObjects, myRectangles, osf, coverage_width);
@@ -548,8 +562,9 @@ public class DistributedMaxRS {
         System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"); 
         
         Vector hintervals = new Vector();
-        while(slabFile.keys().hasMoreElements()){
-            Short sfk = (Short)slabFile.keys().nextElement();
+        Enumeration en = slabFile.keys();
+        while(en.hasMoreElements()){
+            Short sfk = (Short)en.nextElement();
             Window sf = (Window) slabFile.get(sfk); 
             hintervals.addElement(sf);
         }
@@ -584,12 +599,13 @@ public class DistributedMaxRS {
         return result;
     }
     
-    static Window processingC_1(DistSlabfile osf1,DistSlabfile osf2){
+    public static Window processingC_1(DistSlabfile osf1,DistSlabfile osf2){
         Vector myObjectIds = new Vector();
         Vector myObjects = new Vector();
         Vector myRectangles = new Vector();
         Hashtable slabFile = new Hashtable();
         Meit meit = new Meit();
+        processingAll();
         short coverage_width=(short)Math.max((Constants.getNodeLocation((short)3).x-(coverage.width/2)), 0);
         short coverage_height=(short)Math.min((Constants.getNodeLocation((short)15).y+(coverage.height/2)), area.height);
         
@@ -626,8 +642,9 @@ public class DistributedMaxRS {
         System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"); 
         
         Vector hintervals = new Vector();
-        while(slabFile.keys().hasMoreElements()){
-            Short sfk = (Short)slabFile.keys().nextElement();
+        Enumeration en = slabFile.keys();
+        while(en.hasMoreElements()){
+            Short sfk = (Short)en.nextElement();
             Window sf = (Window) slabFile.get(sfk); 
             hintervals.addElement(sf);
         }

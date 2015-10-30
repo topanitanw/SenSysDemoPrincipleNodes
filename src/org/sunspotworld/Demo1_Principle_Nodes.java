@@ -27,9 +27,9 @@ import java.io.IOException;
 
 import com.sun.spot.resources.transducers.ITemperatureInput;
 import com.sun.spot.resources.transducers.ILightSensor;
+import java.util.Vector;
 import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
-
 /**
  * The startApp method of this class is called by the VM to start the
  * application.
@@ -57,6 +57,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
   
   private String ss_id = null;
   private int cluster_no = 0; 
+  private int ss_index = -1;
   private String[] telosb_nodes = null;
   private String telosb_up_right = null;
   private String telosb_down = null;
@@ -64,7 +65,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
   // storage values & resettable values
   private int update_period_dis = -1;
   private int update_period_cen = -1;
-  
+  public static Vector current_values = new Vector(Constants.TOTAL_MOTES);
   // local reading values
   // sensor_type = 2 -> light sensor
   //             = 3 -> temp10 sensor
@@ -84,14 +85,24 @@ public class Demo1_Principle_Nodes extends MIDlet {
   private int[] other_temp_reading = null;
   private int[] other_light_reading = null;
   private boolean rx_pck1_setup = false;
-
+  
+  private boolean tx_busy = false;
+  private int cl1_slabfile_count = 0;
+  private DistSlabfile[] cl1_slabfile = new DistSlabfile[2];
+          
   protected void startApp() throws MIDletStateChangeException {
     //BootloaderListenerService.getInstance().start();   // monitor the USB (if connected) and recognize commands from host
-
+    
+    //setting all node values to 0 first
+    for(int i=0; i<Constants.TOTAL_MOTES; i++){
+        current_values.addElement(new Short((short)0));
+        DistributedMaxRS.currentValues.addElement(new Short((short)0));
+    }
+    DistributedMaxRS.area = new Area(Constants.AREA_WIDTH, Constants.AREA_HEIGHT);
     System.out.println("*** Start up the PRINCIPLE CODE sun spot ***");
     long ourAddr = RadioFactory.getRadioPolicyManager().getIEEEAddress();
     System.out.println("*** Node ID S:0x" + IEEEAddress.toDottedHex(ourAddr) + " ***");
-
+    Constants.setAddresIDMapping();
     setup(IEEEAddress.toDottedHex(ourAddr));
     leds.getLED(1).setRGB(0, 100, 0);
     leds.getLED(2).setRGB(0, 100, 0);    
@@ -108,6 +119,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
   protected void setup(String id)
   {
     this.ss_id = new String(id);
+    ss_index = (int) Constants.getNodeId(id).shortValue();
     
     if(id.equals("0014.4F01.0000.7EBA"))
     {
@@ -193,7 +205,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
         reset_all_setup_values();
         // get of the while loop and reset itself
       } else if(pck_rx.get_pck_type() == 15)
-      {
+      { // the setup package
         // check the package type to respond
         // forward the setup data to other telosbs
         System.out.println("setup + sensor_type: " + pck_rx.get_payload()[2] + " + broadcast");
@@ -230,7 +242,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
             leds.getLED(7).setOn();            
             break;
         } // switch(sensor_type)
-        
+        DistributedMaxRS.coverage = new Area(pck_rx.get_payload()[3], pck_rx.get_payload()[4]);
         // update_period of both algorithms are the same
         update_period_dis = pck_rx.get_payload()[1] / 2;
         update_period_cen = update_period_dis;
@@ -253,17 +265,25 @@ public class Demo1_Principle_Nodes extends MIDlet {
             break;
 
           case 3:
-            System.out.print("update 5 + ");
+            System.out.print("update 8 or 9 ");
             // update the package 5
-            thread_update = new Thread(new Periodic_Update(5), 
+            thread_update = new Thread(new Periodic_Update(), 
                                        "Thread_Update");            
+            
+            tx_connection = new Tiny_connection_pri(full_addr(telosb_up_right),
+                                                    Constants.CONNECTION_PORT, 
+                                                    telosb_nodes);
             break;
 
           case 1:
             System.out.print("update 7 + ");
             // update the package 7
-            thread_update = new Thread(new Periodic_Update(7), 
+            thread_update = new Thread(new Periodic_Update(), 
                                        "Thread_Update");
+
+            tx_connection = new Tiny_connection_pri(full_addr(telosb_up_right),
+                                                    Constants.CONNECTION_PORT, 
+                                                    telosb_nodes);            
             break;
 
           case 0:// cluster 0 -> send the data to T:0x0202
@@ -285,19 +305,13 @@ public class Demo1_Principle_Nodes extends MIDlet {
       } else if((rx_new_pck_type == 2) && (sensor_type == rx_new_pck_type))
       { // keep only a temp10 value
         System.out.println("save data");
-        telosb_light_reading[pck_rx.get_node_index()] = pck_rx.get_payload()[0];
 
+        current_values.setElementAt(new Short((short)pck_rx.get_payload()[0]), pck_rx.get_node_index());
       } else if((rx_new_pck_type == 3) && (sensor_type == rx_new_pck_type))
       { // keep only a light reading
         System.out.println("save data");        
-        telosb_temp_reading[pck_rx.get_node_index()] = pck_rx.get_payload()[0];
-        
-      } else if((rx_new_pck_type == 4) && (sensor_type == rx_new_pck_type))
-      { // keep both light and temp10 readings
-        System.out.println("save data");        
-        telosb_light_reading[pck_rx.get_node_index()] = pck_rx.get_payload()[0];
-        telosb_temp_reading[pck_rx.get_node_index()] = pck_rx.get_payload()[1];
-        
+
+        current_values.setElementAt(new Short((short)pck_rx.get_payload()[0]), pck_rx.get_node_index());
       } else if(pck_rx.get_pck_type() == 5)
       { // for pck_type1 == 5, data = 8x2 bytes containing only
         // either light or temp10 sensor readings
@@ -306,30 +320,23 @@ public class Demo1_Principle_Nodes extends MIDlet {
         if(cluster_no == 0) // this is S:0x7EBA
         { // forward data
           System.out.println("Cluster 0");
-          switch(sensor_type)
+          /*switch(sensor_type)
           {
             case 2:
               tx_connection.send(6, pck_rx, telosb_light_reading);
-              // System.out.println("==== Pck_type 5 Content Cluster 2 =====");
-              // for(int i = 0; i < pck_rx.get_payload().length; i++)
-              //   System.out.println("i: " + i + " = " + pck_rx.get_payload()[i]);
-              // System.out.println("==== Pck_type 5 End Cluster 2 =====");
-              
-              // System.out.println("==== Cluster 0 Content =====");
-              // for(int i = 0; i < telosb_light_reading.length; i++)
-              //   System.out.println("i: " + i + " = " + telosb_light_reading[i]);
-              // System.out.println("==== Cluster 0 End =====");
               break;
               
             case 3:
               tx_connection.send(6, pck_rx, telosb_temp_reading);
               break;
-          }
-          
+          }*/
+          DistSlabfile fw_slapfile = DistributedMaxRS.processingC_0(pck_rx.get_slap_file());  //Next Step, Send the result to C-1
+          Rx_package fw_pck = new Rx_package(6, 0, full_addr(telosb_up_right), fw_slapfile);
+          tx_connection.send(6, fw_pck, null);
           System.out.println("fw Package 6 to T:0x" + telosb_up_right);
         } else // this is S:0x7F45 cluster_no = 1
         { // save the data
-          switch(sensor_type)
+          /*switch(sensor_type)
           {
             // arraycopy(Object src, int srcPos, Object dest,
             //           int destPos, int length);
@@ -348,7 +355,9 @@ public class Demo1_Principle_Nodes extends MIDlet {
               System.arraycopy(pck_rx.get_payload(), 0, other_temp_reading, 16,
                                pck_rx.get_payload().length);
               break;
-          }
+          }*/
+            // #$#$ cluster 1 receives the data from the 0th cluster
+          cluster_1_process(1, pck_rx.get_slap_file()); 
           System.out.println("save data");
         }
         
@@ -357,7 +366,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
       } else if(pck_rx.get_pck_type() == 6)
       { // this is S:0x7F45
         System.out.println("Pck_type 6 Received");        
-        switch(sensor_type)
+        /*switch(sensor_type)
         {
           case 2:
             System.arraycopy(pck_rx.get_payload(), 0, 
@@ -377,17 +386,48 @@ public class Demo1_Principle_Nodes extends MIDlet {
                              other_temp_reading, 0,
                              pck_rx.get_payload().length);              
             break;
-        }
+        }*/
+        /// #$#$ the 1st cluster receives the data from the 3rd cluster
+        cluster_1_process(0, pck_rx.get_slap_file()); 
         System.out.println("save data");
         leds.getLED(3).setRGB(0, 100, 0);
         leds.getLED(3).setOn();                
       } else if(pck_rx.get_pck_type() == 13)
       {
-        System.out.println("Pck_type 13 Received val: " + pck_rx.get_payload()[0]);
+        System.out.println("Pck_type 13 Received val: ");
+        //pck_rx.get_dst_addr();
+        //pck_rx.get_pck_type();
+        DistSlabfile fw_slapfile = DistributedMaxRS.processingC_3(pck_rx.get_slap_file());  //Next Step, Send the result to C-1
+        Rx_package fw_pck = new Rx_package(6, 0, full_addr(telosb_up_right), fw_slapfile);
+        tx_connection.send(5, fw_pck, null);
+        leds.getLED(2).setRGB(0, 100, 0);
+        leds.getLED(2).setOn();
       }
     } 
   }
-
+  
+  private void cluster_1_process(int index, DistSlabfile sl_new) {
+      if(index == 0) {
+          System.out.println("save the data slabfile[0]");
+          cl1_slabfile[0] = sl_new;
+          cl1_slabfile_count++;
+      }else if(index == 1) {
+          System.out.println("save the data slabfile[1]");
+          cl1_slabfile[1] = sl_new;
+          cl1_slabfile_count++;
+      }
+      
+      if(cl1_slabfile_count == 2) {
+          // #$#$
+          System.out.println("processing the slabfile");
+          Window opt_wind = DistributedMaxRS.processingC_1(cl1_slabfile[0], cl1_slabfile[1]);
+          cl1_slabfile_count = 0;
+          
+          Rx_package pck_tx = new Rx_package(7, opt_wind);
+          
+          tx_connection.send(7, pck_tx, null);
+      }
+  }
   private class Periodic_Update implements Runnable {
     // only the ss from cluster_no 2,  3 and 1 will call this function
     private int pck_type1 = -1;
@@ -395,8 +435,6 @@ public class Demo1_Principle_Nodes extends MIDlet {
     private Tiny_connection_pri dis_update = null;
     private Tiny_connection_pri dis_update_side_way = null;
     private Tiny_connection_pri cen_update = null;
-    
-    private int test = 5;
     
     public Periodic_Update(int type1, int type2) {
       pck_type1 = type1;
@@ -431,13 +469,13 @@ public class Demo1_Principle_Nodes extends MIDlet {
                                            null);
     }
     
-    private void update_distributed(int type) {
+    private void update_distributed(int type, DistSlabfile slap_file) {
       Rx_package pck_tx = null;          
       switch(type)
       {
         case 5:
         {
-          switch(sensor_type)
+          /*switch(sensor_type)
           {
             case 2:
               pck_tx = new Rx_package(5, 2, null, telosb_light_reading);
@@ -445,7 +483,8 @@ public class Demo1_Principle_Nodes extends MIDlet {
             case 3:
               pck_tx = new Rx_package(5, 2, null, telosb_temp_reading);
               break;
-          }
+          }*/
+          pck_tx = new Rx_package(5, 2, null, slap_file);
           threadMessage("Periodic Update: pck_type 5 sent");
           dis_update.send(5, pck_tx, null);
           break; 
@@ -527,10 +566,8 @@ public class Demo1_Principle_Nodes extends MIDlet {
         //   break;    
         // }
         case 13: 
-          System.out.println(" sending pck 13");
-          test = test + 10;
-          int[] temp = new int[] {test};
-          pck_tx = new Rx_package(13, 0, null, temp);
+          pck_tx = new Rx_package(5, 2, null, slap_file);
+          threadMessage("Periodic Update: pck_type 13 sent");          
           dis_update_side_way.send(13, pck_tx, null);            
           break;
       }          
@@ -568,7 +605,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
     public void run() {
       while(true) {
         try {
-          if((pck_type1 == 5) || (pck_type1 == 7)) {
+          if((pck_type1 == 5) || (pck_type1 == 7)) { // cluster 2
             threadMessage("Periodic Update: sleep dis: " 
                           + update_period_cen);
             Thread.sleep(update_period_cen * 1000);
@@ -578,18 +615,25 @@ public class Demo1_Principle_Nodes extends MIDlet {
             threadMessage("Periodic Update: sleep cen: " 
                         + update_period_dis);
             Thread.sleep(update_period_dis * 900);    // do a thread sleep in millisecond
-            update_distributed(pck_type1);  // cluster 0, 1       
+
+            DistSlabfile[] slab_values_to_sent = DistributedMaxRS.processingC_2();  
+            update_distributed(pck_type1, slab_values_to_sent[0]);
+            update_distributed(pck_type2, slab_values_to_sent[1]);
+
+            // update_distributed(pck_type1);  // cluster 1, 2       
             
-            System.out.println("done update distributed pck1 send pck2");
-            if(pck_type2 != -1) // cluster 2
-              update_distributed(pck_type2);
+            // System.out.println("done update distributed pck1 send pck2");
+            // if(cluster_no == 2) // cluster 2
+            //  update_distributed(pck_type2);
             
-          } else if(pck_type1 == 8)
-          { // only the principle node of the cluster 0 will 
+          } else if(pck_type1 == 8) // cluster 0, 3, 1
+          { // only the principle node of the cluster 0, 3 will 
             // call these commands
+            // ignore the pck_type1  
             Thread.sleep(update_period_cen * 1900);
             sensor_reading();
-            update_centralized();
+            if(!tx_busy)
+                update_centralized();
           }
         } catch(InterruptedException ie) {
           if(dis_update != null)
@@ -621,7 +665,8 @@ public class Demo1_Principle_Nodes extends MIDlet {
     leds.getLED(2).setOff();
     leds.getLED(3).setOff();
     leds.getLED(7).setOff();
-
+    cl1_slabfile_count = 0;
+    
     if(tx_connection != null)
     {
       tx_connection.close();
@@ -656,13 +701,11 @@ public class Demo1_Principle_Nodes extends MIDlet {
     {
       case 2:
         ss_light_reading = read_light_sensor();
+        current_values.setElementAt(new Short((short) ss_light_reading), ss_index);
         break;
       case 3:
-        ss_temp_reading = read_temp_sensor_c();
-        break;
-      case 4:
-        ss_light_reading = read_light_sensor();              
-        ss_temp_reading = read_temp_sensor_c();              
+        ss_temp_reading = read_temp_sensor_f();
+        current_values.setElementAt(new Short((short) ss_temp_reading), ss_index);
         break;
     }
   }
