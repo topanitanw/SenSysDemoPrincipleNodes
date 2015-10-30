@@ -662,5 +662,65 @@ public class DistributedMaxRS {
         //do compute the size of the rectangle from Energy threshold given by the user
         //Always make the area EVEN!!!!!!!!!!!!!!!!!!!!!!!
         return new Area((short)126, (short)126);
-    } 
+    }
+    
+    //in-place merge sort (increasing order)
+    static void mergeSort(Vector arr, int p, int r){
+	if (p<r){
+		int q = (p+r)/2;  //it will do flooring
+		mergeSort(arr, p, q);
+		mergeSort(arr, q+1, r);
+		merge(arr, p, q, r);
+        }
+    }
+
+    static void merge(Vector arr, int p, int q, int r){
+	Object old = new Object((short)-2, (short)-2, (short)0);
+	Vector left = new Vector();
+	Vector right = new Vector();
+	for(int i=p; i<=q; i++){		
+            left.addElement(arr.elementAt(i));
+        }
+        for(int i=q+1; i<=r; i++){
+            right.addElement(arr.elementAt(i));
+        }
+        
+        left.setElementAt(old, q-p+1);
+        right.setElementAt(old, r-q);
+        for(int i=0, j=0, k=p; k<=r; k++){
+            Object le = (Object)left.elementAt(i);
+            Object ri = (Object)right.elementAt(j);
+            if(le.compareTo(ri)==0 || le.compareTo(ri)==-1){
+                arr.setElementAt(left.elementAt(i), k);
+                i++;
+            }
+            else{
+                arr.setElementAt(right.elementAt(j), k);
+                j++;
+            }
+        }
+    }
+    
+    
+    ////
+    public static Vector doSelectionSortvobj(Vector arr){
+         
+        for (int i = 0; i < arr.size() - 1; i++)
+        {
+            int index = i;
+            for (int j = i + 1; j < arr.size(); j++)
+            {
+                Object o_j = (Object) arr.elementAt(j);
+                Object o_index = (Object) arr.elementAt(index);
+                if (o_j.compareTo(o_index) > 0)
+                    index = j;
+            }
+            Object smallerNumber = (Object) arr.elementAt(index); 
+            // setElementAt(Object obj, int index) Sets the component at the specified index of this vector to be the specified object.
+            arr.setElementAt(arr.elementAt(i), index); // arr[index] = arr[i];
+            arr.setElementAt(smallerNumber, i); // arr[i] = smallerNumber;
+        }
+        
+        return arr;
+    }
 }
