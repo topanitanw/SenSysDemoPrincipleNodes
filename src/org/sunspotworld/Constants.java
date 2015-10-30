@@ -103,7 +103,7 @@ public class Constants {
         return true;
     
     }
-    public static boolean isWithin(Rectangle rect, Object obj){
+    public static boolean isWithin(Rectangle rect, Objects obj){
         if(obj.x<=rect.x2 && obj.x >=rect.x1 && obj.y<=rect.y2 && obj.y >= rect.y1){
             return true;
         }

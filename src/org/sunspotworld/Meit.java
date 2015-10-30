@@ -122,7 +122,7 @@ public class Meit
         lineSplit = line.split(" ");
         // for(String str : lineSplit)
         //   System.out.println(str);         
-        //aListOfObjects.add(new Object(Double.parseDouble(lineSplit[0]),
+        //aListOfObjects.add(new Objects(Double.parseDouble(lineSplit[0]),
                                       //Double.parseDouble(lineSplit[1]),
                                       //Double.parseDouble(lineSplit[2]),
                                       //Double.parseDouble(lineSplit[3])));
@@ -669,4 +669,51 @@ public class Meit
       }
     }
   }
+  
+  /*public void writeOutput(String file_name, Area area, Area coverage,
+                          Vector listOfObjects, Window optimal_window)
+  {
+    // System.out.println("file_name: " + file_name);
+    // String[] name_split = file_name.split(".txt");
+    // System.out.println("name_split size: " + String.valueOf(name_split.length));
+    // for(String name : name_split)
+    //   System.out.print("file_name_split: " + name);
+    // System.out.println("");
+    
+    String new_file_name = "res" + file_name;
+    File oldFile = new File(new_file_name);
+    // if the file exists, delete it
+    if (oldFile.isFile() && oldFile.exists())
+      oldFile.delete();
+    
+    try
+    {
+      FileWriter fwriter = new FileWriter(new_file_name);
+      System.out.println("Write the output file: " + new_file_name);
+      fwriter.write(String.valueOf(area.width) + " " +  String.valueOf(area.height)
+                    + "\r\n");
+      fwriter.write(String.valueOf(coverage.width) + " " +
+                    String.valueOf(coverage.height) + "\r\n");
+      fwriter.write(String.valueOf(listOfObjects.size()) + "\r\n");
+
+      for(int i = 0; i < listOfObjects.size(); i++)
+      {
+         Objects obj = (Objects)listOfObjects.get(i);
+        fwriter.write(String.valueOf(obj.x) + " " +
+                      String.valueOf(obj.y) +" "+String.valueOf(obj.weight)+"\r\n");
+      }
+
+      fwriter.write(String.valueOf(optimal_window.l) + " " +
+                    String.valueOf(optimal_window.r) + " " +
+                    String.valueOf(optimal_window.h) + " " +
+                    String.valueOf(optimal_window.score) + "\r\n");
+      fwriter.close();
+    } catch (IOException ex)
+    {
+      ex.printStackTrace();
+    }
+
+    System.out.println("Writing the output file is done");
+    return;
+  }*/
 }

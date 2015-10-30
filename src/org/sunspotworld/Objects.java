@@ -10,20 +10,20 @@ package org.sunspotworld;
  *
  * @author Muhammed
  */
-public class Object
+public class Objects
 {
   short x;
   short y;
   short weight;
 
-  public Object(short x, short y, short weight)
+  public Objects(short x, short y, short weight)
   {
     this.x = x;
     this.y = y;
     this.weight = weight;
   }
 
-  public int compareTo(Object o)
+  public int compareTo(Objects o)
   { // used in the collections.sort()
     if(this.y > o.y)
       return 1;  // more than the one we are checking 
