@@ -85,6 +85,7 @@ public class Constants {
         if(addr.length()==19){
             addr2=addr.substring(15);
         }
+        
         if(nodeIds.containsKey(addr2)){
             Integer v = (Integer)nodeIds.get(addr2);
             return new Short((short)v.intValue());   

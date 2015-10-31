@@ -304,14 +304,19 @@ public class Demo1_Principle_Nodes extends MIDlet {
         leds.getLED(1).setOn();
       } else if((rx_new_pck_type == 2) && (sensor_type == rx_new_pck_type))
       { // keep only a temp10 value
-        System.out.println("save data");
-
+        System.out.println("save data type 2");
         current_values.setElementAt(new Short((short)pck_rx.get_payload()[0]), pck_rx.get_node_index());
       } else if((rx_new_pck_type == 3) && (sensor_type == rx_new_pck_type))
       { // keep only a light reading
-        System.out.println("save data");        
-
-        current_values.setElementAt(new Short((short)pck_rx.get_payload()[0]), pck_rx.get_node_index());
+        System.out.println("save data type 3");        
+        short node_index = Constants.getNodeId(pck_rx.get_dst_addr()).shortValue();
+        if(Constants.isTelos(node_index))
+        {
+            double celcius = (-39.6 + (0.01 * pck_rx.get_payload()[0]));
+            short farenheit = (short) (((9.0*celcius)/5.0)+32.0);
+            current_values.setElementAt(new Short(farenheit), pck_rx.get_node_index());
+        } else 
+            current_values.setElementAt(new Short((short)pck_rx.get_payload()[0]), pck_rx.get_node_index());
       } else if(pck_rx.get_pck_type() == 5)
       { // for pck_type1 == 5, data = 8x2 bytes containing only
         // either light or temp10 sensor readings
@@ -428,6 +433,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
           tx_connection.send(7, pck_tx, null);
       }
   }
+  
   private class Periodic_Update implements Runnable {
     // only the ss from cluster_no 2,  3 and 1 will call this function
     private int pck_type1 = -1;
@@ -592,13 +598,6 @@ public class Demo1_Principle_Nodes extends MIDlet {
           cen_update.send(9, pck_tx, null);           
           threadMessage("pck 9 sent");
           break;
-        case 4:
-          //data = new int[2];
-          //data[0] = ss_light_reading;
-          //data[1] = ss_temp_reading;
-          //pck_tx = new Rx_package(9, 0, BASE_STATION_ID, data);                
-          //dis_update.send(9, pck_tx, null);           
-          break;
       }
     }
     
@@ -630,7 +629,8 @@ public class Demo1_Principle_Nodes extends MIDlet {
           { // only the principle node of the cluster 0, 3 will 
             // call these commands
             // ignore the pck_type1  
-            Thread.sleep(update_period_cen * 1900);
+            // Thread.sleep(update_period_cen * 1900);
+            Thread.sleep(1789); // 1.789 sec
             sensor_reading();
             if(!tx_busy)
                 update_centralized();
