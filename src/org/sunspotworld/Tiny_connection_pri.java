@@ -13,6 +13,7 @@ import com.sun.spot.service.BootloaderListenerService;
 import com.sun.spot.util.IEEEAddress;
 import java.io.IOException;
 import java.util.Vector;
+import java.util.Hashtable; // Hashtable
 import javax.microedition.io.Connector;
 import javax.microedition.io.Datagram;
 import javax.microedition.io.DatagramConnection;
@@ -29,10 +30,10 @@ public class Tiny_connection_pri
   private String dst_addr = null;
   private int port_no = -1;
   private final int broadcast_constant = 0xFF;
-  private String[] telosb_nodes = null;
+  private Hashtable telosb_nodes = null;
   
   // constructor
-  public Tiny_connection_pri(String dst_addr, int port, String[] nodes) {
+  public Tiny_connection_pri(String dst_addr, int port, Hashtable nodes) {
     this.dst_addr = dst_addr;
     this.port_no = port;
     this.telosb_nodes = nodes;
@@ -410,18 +411,17 @@ public class Tiny_connection_pri
     // if this sun spot receives a package from a principle node,
     // return asap.
     // this if statement assumes that if an address is 
-    // sun spot's, return -1.
-    if(Integer.parseInt(addr.substring(15,16)) == 7)
-      return -1;
+    // sun spot's, return -1. (
+    Integer val = null;
+    if (addr.length() > 4) 
+      val = (Integer) telosb_nodes.get(last_4addr(addr));
+    else 
+      val = (Integer) telosb_nodes.get(last_4addr(addr));
     
-    String sub_addr = last_4addr(addr);
-    for(int i = 0; i < telosb_nodes.length; i++)
-    {
-      if(sub_addr.equals(telosb_nodes[i]))
-        return i;
-    }
-
-    return -1;      
+    if (val == null)
+      return -1;
+    else 
+      return val.intValue();
   }
   
   public String last_4addr(String addr) {

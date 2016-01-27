@@ -48,7 +48,6 @@ public class Rx_package {
       this.opt_win = opt;
   }
           
-
   public int get_pck_type() {
     return this.pck_type;
   }
