@@ -47,7 +47,6 @@ public class Demo1_Principle_Nodes extends MIDlet {
   private ITemperatureInput tsensor = (ITemperatureInput) Resources.lookup(ITemperatureInput.class);
   private ILightSensor lsensor = (ILightSensor) Resources.lookup(ILightSensor.class);  
   // constants
-  private final int BROADCAST_CONSTANT = 0xFF;
   private final String BROADCAST_ID = "0014.4F01.0000.FFFF";
   
   
@@ -111,7 +110,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
     leds.getLED(0).setRGB(0,100,0);  // set color to moderate red
     leds.getLED(0).setOn();
     
-    //reset();                       // only the base station will reset all nodes
+    //reset();                       // only the base statitn will reset all nodes
     receive_node_data();
     
     notifyDestroyed();               // cause the MIDlet to exit
@@ -218,10 +217,12 @@ public class Demo1_Principle_Nodes extends MIDlet {
       
       System.out.print("pck_type type: " + pck_rx.get_pck_type() + " -> ");
       int rx_new_pck_type = pck_rx.get_pck_type();
-      if((pck_rx.get_pck_type() == 0) && (pck_rx.get_payload()[0] == BROADCAST_CONSTANT))
+      if(pck_rx.get_pck_type() == 0) System.out.println("payload[0] " + pck_rx.get_payload()[0] + " : " + Constants.BROADCAST_CONSTANT);
+      if((pck_rx.get_pck_type() == 0) && (pck_rx.get_payload()[0] == Constants.BROADCAST_CONSTANT))
       {
         // it will turn off the sun sport and reset itself
         // automatically
+        System.out.println("+++++++++++++ Reset All Setup Values ++++++++++++++++++");
         reset_all_setup_values();
         // get of the while loop and reset itself
       } else if(pck_rx.get_pck_type() == 15)
@@ -344,7 +345,8 @@ public class Demo1_Principle_Nodes extends MIDlet {
           System.out.println("Cluster 0");
           DistSlabfile fw_slapfile = DistributedMaxRS.processingC_0(pck_rx.get_slap_file());  //Next Step, Send the result to C-1
           Rx_package fw_pck = new Rx_package(6, 0, full_addr(telosb_up_right), fw_slapfile);
-          tx_connection.send(6, fw_pck, null);
+          if(tx_connection != null) 
+            tx_connection.send(6, fw_pck, null);
           System.out.println("fw Package 6 to T:0x" + telosb_up_right);
         } else // this is S:0x7F45 cluster_no = 1
         { // save the data
@@ -368,7 +370,8 @@ public class Demo1_Principle_Nodes extends MIDlet {
         System.out.println("Pck_type 13 Received val: ");
         DistSlabfile fw_slapfile = DistributedMaxRS.processingC_3(pck_rx.get_slap_file());  //Next Step, Send the result to C-1
         Rx_package fw_pck = new Rx_package(6, 0, full_addr(telosb_up_right), fw_slapfile);
-        tx_connection.send(5, fw_pck, null);
+        if(tx_connection != null)
+          tx_connection.send(5, fw_pck, null);
         leds.getLED(2).setRGB(0, 100, 0);
         leds.getLED(2).setOn();
       }
@@ -376,17 +379,17 @@ public class Demo1_Principle_Nodes extends MIDlet {
   }
   
   private void cluster_1_process(int index, DistSlabfile sl_new) {
-      if(index == 0) {
+      if(index == 0) { // from cluster 0 -> 1
           System.out.println("save the data slabfile[0]");
           cl1_slabfile[0] = sl_new;
           cl1_slabfile_count++;
-      } else if(index == 1) {
+      } else if(index == 1) { // from cluster 3 -> 1 but contains the data from cluster 2
           System.out.println("save the data slabfile[1]");
           cl1_slabfile[1] = sl_new;
           cl1_slabfile_count++;
       }
       
-      if(cl1_slabfile_count == 2) {
+      if(cl1_slabfile_count == 2) { 
           // #$#$
           System.out.println("processing the slabfile");
           Window opt_wind = DistributedMaxRS.processingC_1(cl1_slabfile[0], cl1_slabfile[1]);
@@ -394,7 +397,8 @@ public class Demo1_Principle_Nodes extends MIDlet {
           
           Rx_package pck_tx = new Rx_package(7, opt_wind);
           // cluster 1 send the data
-          tx_connection.send(7, pck_tx, null);
+          if(tx_connection != null)
+            tx_connection.send(7, pck_tx, null);
       }
   }
   

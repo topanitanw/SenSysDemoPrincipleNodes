@@ -14,6 +14,8 @@ public class Constants {
     ////////////////////////Default static values..............................
     public static final short AREA_WIDTH= 350;  //area width
     public static final short AREA_HEIGHT= 350;  //area size
+    // gap 
+    // |_0_1_2_3_4_5_6_| the underscores are the gap widths
     public static final short GAP_HEIGHT= AREA_HEIGHT/7;  //area gap
     public static final short GAP_WIDTH= AREA_WIDTH/7;  //area gap
     
@@ -38,6 +40,7 @@ public class Constants {
     public static final String[] TELOSB_NODES = {"1205"}; 
     public static final int CONNECTION_PORT = 65; 
     public static final short SEPERATOR  = -100;
+    public static final int BROADCAST_CONSTANT = 0x7F;
     
     public static Hashtable nodeIds= new Hashtable();
     

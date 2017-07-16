@@ -29,7 +29,6 @@ public class Tiny_connection_pri
   private Datagram dg = null;
   private String dst_addr = null;
   private int port_no = -1;
-  private final int broadcast_constant = 0xFF;
   private Hashtable telosb_nodes = null;
   
   // constructor
@@ -99,7 +98,7 @@ public class Tiny_connection_pri
         // We send the message (UTF encoded)
         dg.reset();
         dg.writeByte(0);
-        dg.writeByte(broadcast_constant);
+        dg.writeByte(Constants.BROADCAST_CONSTANT);
         tiny_connection.send(dg);
         System.out.println("$TC Reset Sent");
         return true;
@@ -248,6 +247,7 @@ public class Tiny_connection_pri
       {
         int[] data = new int[1];
         data[0] = (int) dg.readByte();
+        System.out.println("test print out payload " + data[0]);
         res = new Rx_package(pck_type, node_index, dest_addr,
                              data);
       } else if(pck_type == 1)
@@ -356,7 +356,7 @@ public class Tiny_connection_pri
             short rd_start = dg.readShort();
             
             while(rd_start != Constants.SEPERATOR) {
-                System.out.println("test");
+                // System.out.println("test");
                 short wl = rd_start;
                 short wr = dg.readShort(); 
                 short wh = dg.readShort(); 
@@ -364,10 +364,10 @@ public class Tiny_connection_pri
                 hiv.addElement(new Window(wl, wr, wh, wscore));
                 rd_start = dg.readShort();
             }
-            System.out.println("test2");            
+            // System.out.println("test2");            
             rd_start = dg.readShort();
             while(rd_start != Constants.TERMINATOR) {
-                System.out.println("test3");                
+                // System.out.println("test3");                
                 nv.addElement(new Short(rd_start)); 
                 rd_start = dg.readShort();
             }
@@ -412,16 +412,16 @@ public class Tiny_connection_pri
     // return asap.
     // this if statement assumes that if an address is 
     // sun spot's, return -1. (
-    Integer val = null;
+    Short val = null;
     if (addr.length() > 4) 
-      val = (Integer) telosb_nodes.get(last_4addr(addr));
+      val = (Short) telosb_nodes.get(last_4addr(addr));
     else 
-      val = (Integer) telosb_nodes.get(last_4addr(addr));
+      val = (Short) telosb_nodes.get(last_4addr(addr));
     
     if (val == null)
       return -1;
     else 
-      return val.intValue();
+      return val.shortValue();
   }
   
   public String last_4addr(String addr) {

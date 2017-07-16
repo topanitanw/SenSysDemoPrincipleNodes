@@ -16,6 +16,7 @@ import java.util.Hashtable;
 
 public class Meit
 {
+  // meit = maximum enclosing interval tree
   // global variables
   // used in incToNode functions to determine whether an interval
   // overlapping/intersecting the left or right of current interval has
@@ -36,6 +37,7 @@ public class Meit
 
   IntervalTree interval_tree_root = null;
 
+  short K = 3;
   // build a balanced interval tree
   // use the average of two median points as root; attach left nodes(nodes
   // to the left of right medians) as left subtrees and right nodes
@@ -149,8 +151,87 @@ public class Meit
     return aListOfObjects;
   }*/
 
+  private Vector save_sort(Vector optimal_window, Window inserted_window, int save_index, Area coverage) {
+    System.out.println("save_sort inserted_window: " + inserted_window);
+    System.out.println("save_index: " + save_index);
+    
+    for(int i = 0; i < optimal_window.size(); i++) 
+      System.out.println("i: " + i + " optimal_window" + ((Window) optimal_window.elementAt(i)));
+    
+    if (save_index == -1)
+      return optimal_window;
+    
+    if (optimal_window.size() > save_index) {
+      Window temp_win = ((Window) optimal_window.elementAt(save_index));
+      if (temp_win == inserted_window)
+        return optimal_window;
+      
+      if ((temp_win.l == inserted_window.l) &&
+          (temp_win.r == inserted_window.r) &&
+          ((temp_win.h <= inserted_window.h) &&
+           (temp_win.h + coverage.height >= inserted_window.h))) {
+            optimal_window.setElementAt(inserted_window, save_index);
+            return optimal_window;
+      }
+    }
+
+    optimal_window.insertElementAt(inserted_window, save_index);
+    if(optimal_window.size() == K+1)
+      optimal_window.removeElementAt(K);
+    return optimal_window;
+  }
+  
+  private Vector sort_optimal_window(Vector optimal_window, 
+                                     IntervalTree root,
+                                     short h,
+                                     Area coverage)
+  {
+    System.out.println("sort_optimal_window");
+    
+    // assume (# the number of rectangles) k = 3
+    if ((root.target == null) || (root.maxscore == 0))
+      return optimal_window;
+    
+    Window inserted_window = root.target.clone();
+    inserted_window.score = root.maxscore;
+    inserted_window.h = h;
+
+    if ((optimal_window.size() == K) &&
+        (inserted_window.score <= ((Window) optimal_window.elementAt(K-1)).score))
+      return optimal_window;
+
+    if (optimal_window.contains(inserted_window))
+      return optimal_window;
+
+    int start_index = 0;
+    int end_index = K-1;
+    int save_index = -1;
+    
+    while(start_index <= end_index) {
+      if (start_index == end_index) {
+        if ((optimal_window.size() <= start_index) ||
+            (inserted_window.score > ((Window) optimal_window.elementAt(start_index)).score)) {
+          save_index = start_index;
+          end_index = start_index;
+        } else
+          start_index = start_index + 1;
+        return save_sort(optimal_window, inserted_window, save_index, coverage);
+      }
+      
+      int mid = (start_index + end_index) / 2;
+      if ((optimal_window.size() <= mid) ||
+          (inserted_window.score >= ((Window) optimal_window.elementAt(mid)).score)) {
+        save_index = mid;
+        end_index = mid;
+      } else
+        start_index = mid+1;
+      
+    }
+    return save_sort(optimal_window, inserted_window, save_index, coverage);
+  }
+
   public Hashtable maxEnclosing(Vector aListOfRectangles,
-                             Area coverage, IntervalTree root)
+                                Area coverage, IntervalTree root)
   {
     //Addition for the distributed process
     Hashtable slabFile = new Hashtable();
