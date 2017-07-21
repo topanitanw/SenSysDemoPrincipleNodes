@@ -32,13 +32,13 @@ public class Window
   }
 
   
-    public int compareTo(Window o)
-    { // used in the collections.sort()
-        if(this.h < o.h)
-            return 1;  // more than the one we are checking 
-        else if(this.h == o.h)
-            return 0;  // equal to the one we are checking
-        else
-            return -1; // less then the one we are checking 
+  public int compareTo(Window o)
+  { // used in the collections.sort()
+    if(this.h < o.h)
+      return 1;  // more than the one we are checking 
+    else if(this.h == o.h)
+      return 0;  // equal to the one we are checking
+    else
+      return -1; // less then the one we are checking 
   }
 }

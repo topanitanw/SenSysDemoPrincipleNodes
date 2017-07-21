@@ -28,13 +28,13 @@ public class Objects
     if(this.y > o.y)
       return 1;  // more than the one we are checking 
     else if(this.y == o.y){
-        if(this.x>o.x){
-            return 1;
-        }
-        else if(this.x<o.x){
-            return -1;
-        }
-        return 0;  // equal to the one we are checking 
+      if(this.x>o.x){
+        return 1;
+      }
+      else if(this.x<o.x){
+        return -1;
+      }
+      return 0;  // equal to the one we are checking 
     }
     else
       return -1; // less then the one we are checking 

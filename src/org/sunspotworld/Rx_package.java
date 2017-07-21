@@ -44,8 +44,8 @@ public class Rx_package {
   }
   
   public Rx_package(int pck_type, Window opt) {
-      this.pck_type = pck_type;
-      this.opt_win = opt;
+    this.pck_type = pck_type;
+    this.opt_win = opt;
   }
           
   public int get_pck_type() {
@@ -65,7 +65,7 @@ public class Rx_package {
   }
   
   public Window get_window() {
-      return this.opt_win;
+    return this.opt_win;
   }
 
   public DistSlabfile get_slap_file() {

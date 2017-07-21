@@ -87,7 +87,8 @@ public class Demo1_Principle_Nodes extends MIDlet {
   private boolean rx_pck1_setup = false;
   
   private boolean tx_busy = false;
-  private int cl1_slabfile_count = 0;
+  private int cl1_slabfile0 = 0;
+  private int cl1_slabfile1 = 0;
   private DistSlabfile[] cl1_slabfile = new DistSlabfile[2];
           
   protected void startApp() throws MIDletStateChangeException {
@@ -111,8 +112,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
     leds.getLED(0).setOn();
     
     //reset();                       // only the base statitn will reset all nodes
-    receive_node_data();
-    
+    receive_node_data();    
     notifyDestroyed();               // cause the MIDlet to exit
   }
 
@@ -125,12 +125,12 @@ public class Demo1_Principle_Nodes extends MIDlet {
     {
       cluster_no = 0;
       telosb_nodes.put("0000", new Short((short)0));
-      telosb_nodes.put("0101", new Short((short)1));
+      // telosb_nodes.put("0101", new Short((short)1));
       telosb_nodes.put("0202", new Short((short)2));
-      telosb_nodes.put("0306", new Short((short)3));
-      telosb_nodes.put("0407", new Short((short)4));
+      // telosb_nodes.put("0306", new Short((short)3));
+      // telosb_nodes.put("0407", new Short((short)4));
       telosb_nodes.put("0510", new Short((short)5));
-      telosb_nodes.put("0611", new Short((short)6));
+      // telosb_nodes.put("0611", new Short((short)6));
       telosb_nodes.put("0712", new Short((short)7));
       telosb_up_right = "0202";
       // telosb_down = "0712"; unused variables
@@ -138,12 +138,12 @@ public class Demo1_Principle_Nodes extends MIDlet {
     {
       cluster_no = 1;
       telosb_nodes.put("1003", new Short((short)0));
-      telosb_nodes.put("1104", new Short((short)1));
+      // telosb_nodes.put("1104", new Short((short)1));
       telosb_nodes.put("1205", new Short((short)2));
-      telosb_nodes.put("1308", new Short((short)3));
+      // telosb_nodes.put("1308", new Short((short)3));
       telosb_nodes.put("1409", new Short((short)4));
       telosb_nodes.put("1513", new Short((short)5));
-      telosb_nodes.put("1614", new Short((short)6));
+      // telosb_nodes.put("1614", new Short((short)6));
       telosb_nodes.put("1715", new Short((short)7));      
       telosb_up_right = "1205";
       // telosb_down = "1715"; unused variables
@@ -151,12 +151,12 @@ public class Demo1_Principle_Nodes extends MIDlet {
     {
       cluster_no = 2;
       telosb_nodes.put("2016", new Short((short)0));
-      telosb_nodes.put("2117", new Short((short)1));
+      // telosb_nodes.put("2117", new Short((short)1));
       telosb_nodes.put("2218", new Short((short)2));
-      telosb_nodes.put("2322", new Short((short)3));
-      telosb_nodes.put("2423", new Short((short)4));
+      // telosb_nodes.put("2322", new Short((short)3));
+      // telosb_nodes.put("2423", new Short((short)4));
       telosb_nodes.put("2526", new Short((short)5));
-      telosb_nodes.put("2627", new Short((short)6));
+      // telosb_nodes.put("2627", new Short((short)6));
       telosb_nodes.put("2728", new Short((short)7));       
       telosb_up_right = "2218";
       telosb_right_side = "2728";
@@ -164,12 +164,12 @@ public class Demo1_Principle_Nodes extends MIDlet {
     {
       cluster_no = 3;
       telosb_nodes.put("3019", new Short((short)0));
-      telosb_nodes.put("3120", new Short((short)1));
+      // telosb_nodes.put("3120", new Short((short)1));
       telosb_nodes.put("3221", new Short((short)2));
-      telosb_nodes.put("3324", new Short((short)3));
-      telosb_nodes.put("3425", new Short((short)4));
+      // telosb_nodes.put("3324", new Short((short)3));
+      // telosb_nodes.put("3425", new Short((short)4));
       telosb_nodes.put("3529", new Short((short)5));
-      telosb_nodes.put("3630", new Short((short)6));
+      // telosb_nodes.put("3630", new Short((short)6));
       telosb_nodes.put("3731", new Short((short)7));       
       telosb_up_right = "3221";
     }
@@ -220,7 +220,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
       if(pck_rx.get_pck_type() == 0) System.out.println("payload[0] " + pck_rx.get_payload()[0] + " : " + Constants.BROADCAST_CONSTANT);
       if((pck_rx.get_pck_type() == 0) && (pck_rx.get_payload()[0] == Constants.BROADCAST_CONSTANT))
       {
-        // it will turn off the sun sport and reset itself
+        // it will turn off the sun sport and reset itself 
         // automatically
         System.out.println("+++++++++++++ Reset All Setup Values ++++++++++++++++++");
         reset_all_setup_values();
@@ -334,8 +334,8 @@ public class Demo1_Principle_Nodes extends MIDlet {
             current_values.setElementAt(new Short((short)pck_rx.get_payload()[0]), pck_rx.get_node_index());
         
       } else if(pck_rx.get_pck_type() == 5)
-      { // for pck_type1 == 5, data = 8x2 bytes containing only
-        // either light or temp10 sensor readings
+      { // for pck_type == 5, data = 8x2 bytes containing only
+        // either light or temp sensor readings
         // Pck 5 Cluster 2 -> Cluster 0
         //       Cluster 3 -> Cluster 1
         System.out.println("Pck_type 5 Received");
@@ -348,7 +348,7 @@ public class Demo1_Principle_Nodes extends MIDlet {
           if(tx_connection != null) 
             tx_connection.send(6, fw_pck, null);
           System.out.println("fw Package 6 to T:0x" + telosb_up_right);
-        } else // this is S:0x7F45 cluster_no = 1
+        } else // this is S:0x7F45 cluster_no = 1 from cluster 3
         { // save the data
           // #$#$ cluster 1 receives the data from the 0th cluster
           cluster_1_process(1, pck_rx.get_slap_file()); 
@@ -382,18 +382,19 @@ public class Demo1_Principle_Nodes extends MIDlet {
       if(index == 0) { // from cluster 0 -> 1
           System.out.println("save the data slabfile[0]");
           cl1_slabfile[0] = sl_new;
-          cl1_slabfile_count++;
+          cl1_slabfile0 = 1;
       } else if(index == 1) { // from cluster 3 -> 1 but contains the data from cluster 2
           System.out.println("save the data slabfile[1]");
           cl1_slabfile[1] = sl_new;
-          cl1_slabfile_count++;
+          cl1_slabfile1 = 1;
       }
       
-      if(cl1_slabfile_count == 2) { 
+      if(cl1_slabfile0 == 1 && cl1_slabfile1 == 1) { 
           // #$#$
           System.out.println("processing the slabfile");
           Window opt_wind = DistributedMaxRS.processingC_1(cl1_slabfile[0], cl1_slabfile[1]);
-          cl1_slabfile_count = 0;
+          cl1_slabfile0 = 0;
+          cl1_slabfile1 = 0;
           
           Rx_package pck_tx = new Rx_package(7, opt_wind);
           // cluster 1 send the data
@@ -465,14 +466,14 @@ public class Demo1_Principle_Nodes extends MIDlet {
           data[0] = ss_light_reading;
           pck_tx = new Rx_package(8, 0, BASE_STATION_ID, data);                
           cen_update.send(8, pck_tx, null); 
-          threadMessage("pck 8 sent");
+          threadMessage("pck 2/8 sent");
           break;
         case 3:
           data = new int[1];
           data[0] = ss_temp_reading;
           pck_tx = new Rx_package(9, 0, BASE_STATION_ID, data);                
           cen_update.send(9, pck_tx, null);           
-          threadMessage("pck 9 sent");
+          threadMessage("pck 3/9 sent");
           break;
       }
     }
@@ -537,7 +538,8 @@ public class Demo1_Principle_Nodes extends MIDlet {
     leds.getLED(2).setOff();
     leds.getLED(3).setOff();
     leds.getLED(7).setOff();
-    cl1_slabfile_count = 0;
+    cl1_slabfile0 = 0;
+    cl1_slabfile1 = 0;
     
     if(tx_connection != null)
     { // if the connection is open, close it.
