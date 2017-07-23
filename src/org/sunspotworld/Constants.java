@@ -36,7 +36,7 @@ public class Constants {
     public static final int CONNECTION_PORT = 65; 
     public static final short SEPERATOR  = -100;
     public static final int BROADCAST_CONSTANT = 0x7F;
-    
+    public static final short NUM_NODE_CLUSTER = 5;
     public static Hashtable nodeIds= new Hashtable();
     
     public static void setAddresIDMapping(){

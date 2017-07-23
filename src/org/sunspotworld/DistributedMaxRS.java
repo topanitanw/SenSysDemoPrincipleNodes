@@ -95,7 +95,7 @@ public class DistributedMaxRS {
     //Collections.sort(myObects_sorted);
 
     myObects_sorted=doSelectionSortvobj(myObects_sorted);
-    for(int c=0; c<myObjects.size(); c++){
+    for(int c=0; c<myObjects.size(); c++) {
       Objects obj = (Objects) myObects_sorted.elementAt(c);
       myRectangles.addElement(new Rectangle((short)Math.max(0, obj.x - coverage.width/2),
                                             (short)Math.max(0, obj.y - coverage.height/2),
@@ -131,7 +131,7 @@ public class DistributedMaxRS {
     myObjectIds.addElement(new Short((short)32));
 
     //setting up the objects for once
-    for(int i=0; i<5; i++){
+    for(int i=0; i< Constants.NUM_NODE_CLUSTER; i++) {
       Short id = (Short)myObjectIds.elementAt(i);
       Point p = Constants.getNodeLocation(id.shortValue());
       Short value = (Short)currentValues.elementAt(id.shortValue());
@@ -139,15 +139,38 @@ public class DistributedMaxRS {
     }
     //Add adjustments, meaning newobjects here
     //from cluster-2
-    short i=9;
+    short i= Constants.NUM_NODE_CLUSTER;
     short j=0;
     int limit = (coverage.height/Constants.GAP_HEIGHT)<=3?(coverage.height/Constants.GAP_HEIGHT):3;
     for(int k=0; k<limit; k++){
-      for(;i<(3 *(4+k));i++){
-        Short id=(Short) myObjectIds.elementAt(i);
-        Point obj = Constants.getNodeLocation(id.shortValue());
-        Short value = (Short)osf.neededValues.elementAt(j++);
-        myObjects.addElement(new Objects(obj.x, obj.y, value.shortValue()));
+      Objects obj = null;
+      Short id = null;
+      Point obj_p = null;
+      Short value = null;
+      switch(k) { // height
+        case 1:
+          for(j = 0; j < 2; j++) {
+            id=(Short) myObjectIds.elementAt(j+i);
+            obj_p = Constants.getNodeLocation(id.shortValue());
+            value = (Short)osf.neededValues.elementAt(j++);
+            myObjects.addElement(new Objects(obj_p.x, obj_p.y, value.shortValue()));
+          }
+          break;
+        case 2:
+          j = 2;
+          id=(Short) myObjectIds.elementAt(j+i);
+          obj_p = Constants.getNodeLocation(id.shortValue());
+          value = (Short)osf.neededValues.elementAt(j++);
+          myObjects.addElement(new Objects(obj_p.x, obj_p.y, value.shortValue()));
+          break;
+        case 3:
+          for(j = 3; j < 5; j++) {
+            id=(Short) myObjectIds.elementAt(j+i);
+            obj_p = Constants.getNodeLocation(id.shortValue());
+            value = (Short)osf.neededValues.elementAt(j++);
+            myObjects.addElement(new Objects(obj_p.x, obj_p.y, value.shortValue()));
+          }
+          break;
       }
     }
 
@@ -185,7 +208,6 @@ public class DistributedMaxRS {
     myObjectIds.addElement(new Short((short)35));
 
     //object id-s from cluster-2
-
     myObjectIds.addElement(new Short((short)20));
     // myObjectIds.addElement(new Short((short)26));
     myObjectIds.addElement(new Short((short)32));
@@ -196,10 +218,8 @@ public class DistributedMaxRS {
     // myObjectIds.addElement(new Short((short)24));
     myObjectIds.addElement(new Short((short)30));
 
-
-
     //setting up the objects for once
-    for(int i=0; i<9; i++){
+    for(int i=0; i< Constants.NUM_NODE_CLUSTER; i++){
       Short id = (Short)myObjectIds.elementAt(i);
       Point p = Constants.getNodeLocation(id.shortValue());
       Short val = (Short)currentValues.elementAt(id.shortValue());
@@ -207,18 +227,40 @@ public class DistributedMaxRS {
     }
     //Add adjustments, meaning new objects here
     //from cluster-2
-    short i=9;
+    short i= Constants.NUM_NODE_CLUSTER;
     short j=0;
     int limit = (coverage.width/Constants.GAP_WIDTH)<=3?(coverage.width/Constants.GAP_WIDTH):3;
-    for(int k=0; k<limit; k++){
-      for(;i<(3 *(4+k));i++){
-        Short id = (Short)myObjectIds.elementAt(i);
-        Point p = Constants.getNodeLocation(id.shortValue());
-        Short val = (Short)osf.neededValues.elementAt(j++);
-        myObjects.addElement(new Objects(p.x, p.y, val.shortValue()));
+    for(int k=0; k<limit; k++) {
+      Objects obj = null;
+      Short id = null;
+      Point obj_p = null;
+      Short value = null;
+      switch(k) { // width
+        case 1:
+          for(j = 0; j < 2; j++) {
+            id=(Short) myObjectIds.elementAt(j+i);
+            obj_p = Constants.getNodeLocation(id.shortValue());
+            value = (Short)osf.neededValues.elementAt(j++);
+            myObjects.addElement(new Objects(obj_p.x, obj_p.y, value.shortValue()));
+          }
+          break;
+        case 2:
+          j = 2;
+          id =(Short) myObjectIds.elementAt(j+i);
+          obj_p = Constants.getNodeLocation(id.shortValue());
+          value = (Short)osf.neededValues.elementAt(j++);
+          myObjects.addElement(new Objects(obj_p.x, obj_p.y, value.shortValue()));
+          break;
+        case 3:
+          for(j = 3; j < 5; j++) {
+            id=(Short) myObjectIds.elementAt(j+i);
+            obj_p = Constants.getNodeLocation(id.shortValue());
+            value = (Short)osf.neededValues.elementAt(j++);
+            myObjects.addElement(new Objects(obj_p.x, obj_p.y, value.shortValue()));
+          }
+          break;
       }
     }
-
 
     Vector myObects_sorted = new Vector();
     for(int c=0; c<myObjects.size(); c++){
@@ -237,7 +279,6 @@ public class DistributedMaxRS {
                                                             obj.y + coverage.height/2),
                                             obj.weight));
     }
-
   }
 
   static void initializeC_1(Vector myObjectIds, Vector myObjects, Vector myRectangles, DistSlabfile osf1, DistSlabfile osf2, short coverage_height, short coverage_width){
@@ -309,7 +350,7 @@ public class DistributedMaxRS {
 
     // setting up the objects for once
     // get obj location and sensor values to set up objects
-    for(int i=0; i<9; i++){
+    for(int i=0; i< Constants.NUM_NODE_CLUSTER; i++) {
       Short id = (Short)myObjectIds.elementAt(i);
       Point p = Constants.getNodeLocation(id.shortValue());
       Short val = (Short)currentValues.elementAt(id.shortValue());
@@ -318,52 +359,128 @@ public class DistributedMaxRS {
 
     //Add adjustments, meaning new rectangles here
     //from cluster-0
-    short i=9;
-    short j=0;
+    short i= Constants.NUM_NODE_CLUSTER;
     int limit = (coverage.width/Constants.GAP_WIDTH)<=3?(coverage.width/Constants.GAP_WIDTH):3;
-    for(int k=0; k<limit; k++){
-      for(;i<(3 *(4+k));i++){
-        Short id = (Short)myObjectIds.elementAt(i);
-        Point obj = Constants.getNodeLocation(id.shortValue());
-        Short val = (Short)osf1.neededValues.elementAt(j++);
-        myObjects.addElement(new Objects(obj.x, obj.y, val.shortValue()));
+    for(int k=0; k<limit; k++) {
+      Short id = null;
+      Point p = null;
+      Short val = null;
+      switch(k) { // height
+        case 1:
+          for(int j = 0 ; j < 2; j++) {
+            id = (Short)myObjectIds.elementAt(i+j);
+            p = Constants.getNodeLocation(id.shortValue());
+            val = (Short)osf1.neededValues.elementAt(j);
+            myObjects.addElement(new Objects(p.x, p.y, val.shortValue()));
+          }
+          break;
+        case 2:
+          id = (Short)myObjectIds.elementAt(i+2);
+          p = Constants.getNodeLocation(id.shortValue());
+          val = (Short)osf1.neededValues.elementAt(2);
+          myObjects.addElement(new Objects(p.x, p.y, val.shortValue()));
+          break;
+        case 3:
+          for(int j = 3; j < Constants.NUM_NODE_CLUSTER; j++) {
+            id = (Short)myObjectIds.elementAt(i+j);
+            p = Constants.getNodeLocation(id.shortValue());
+            val = (Short)osf1.neededValues.elementAt(j);
+            myObjects.addElement(new Objects(p.x, p.y, val.shortValue()));
+          }
+          break;
       }
     }
 
     //from cluster-3
-    i=18;
-    j=0;
+    i = Constants.NUM_NODE_CLUSTER * 2;
+    short nv_offset = 0; // osf2.neededValues offset
     limit=(coverage.height/Constants.GAP_HEIGHT)<=3?(coverage.height/Constants.GAP_HEIGHT):3;
     for(int k=0; k<limit; k++){
-      for(;i<(3 *(7+k));i++){
-        Short id = (Short)myObjectIds.elementAt(i);
-        Point obj = Constants.getNodeLocation(id.shortValue());
-        Short val = (Short)osf2.neededValues.elementAt(j++);
-        myObjects.addElement(new Objects(obj.x, obj.y, val.shortValue()));
-      }
+      Short id = null;
+      Point obj = null;
+      Short val = null;
+      switch(k) { // height
+        case 1:
+          for(int j = 0 ; j < 2; j++) {
+            id = (Short)myObjectIds.elementAt(i+j);
+            obj = Constants.getNodeLocation(id.shortValue());
+            val = (Short)osf2.neededValues.elementAt(j);
+            myObjects.addElement(new Objects(obj.x, obj.y, val.shortValue()));
+            nv_offset++;
+          }
+          break;
+        case 2:
+          id = (Short)myObjectIds.elementAt(i+2);
+          obj = Constants.getNodeLocation(id.shortValue());
+          val = (Short)osf2.neededValues.elementAt(2);
+          myObjects.addElement(new Objects(obj.x, obj.y, val.shortValue()));
+          nv_offset++;          
+          break;
+        case 3:
+          for(int j = 3; j < Constants.NUM_NODE_CLUSTER; j++) {
+            id = (Short)myObjectIds.elementAt(i+j);
+            obj = Constants.getNodeLocation(id.shortValue());
+            val = (Short)osf2.neededValues.elementAt(j);
+            myObjects.addElement(new Objects(obj.x, obj.y, val.shortValue()));
+            nv_offset++;
+          }
+          break;
+      }      
     }
 
-    //from cluster-2
-    int k=(coverage.height/Constants.GAP_HEIGHT)<=3?(coverage.height/Constants.GAP_HEIGHT):3;
-    int limit2 = (coverage.width/Constants.GAP_WIDTH)<=3?(coverage.width/Constants.GAP_WIDTH):3;
+    // from cluster-2
+    i = Constants.NUM_NODE_CLUSTER * 3;
+    int height=(coverage.height/Constants.GAP_HEIGHT)<=3?(coverage.height/Constants.GAP_HEIGHT):3;
+    int width = (coverage.width/Constants.GAP_WIDTH)<=3?(coverage.width/Constants.GAP_WIDTH):3;
     System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-    for(i=0; i<limit2; i++){
-      for(short p=0;p<k; p++){
-        Short id = (Short)myObjectIds.elementAt(27+(i*3+p));
-        Point obj = Constants.getNodeLocation(id.shortValue());
-        Short val = (Short)osf2.neededValues.elementAt(j++);
-        myObjects.addElement(new Objects(obj.x, obj.y, val.shortValue()));
+    int highwidth = height*10 + width;
+    int[] index = null;
+    switch(highwidth) {
+      case 0:
+        break;
+      case 13:
+        index = new int[]{0, 3};
+        break;
+      case 22:
+        index = new int[]{0, 2};
+        break;
+      case 23:
+        index = new int[]{0, 2, 3};
+        break;
+      case 31:
+        index = new int[]{0, 1};
+        break;
+      case 32:
+        index = new int[]{0, 1, 2};
+        break;
+      case 33:
+        index = new int[]{0, 1, 2, 3, 4};
+        break;
+      case 11:
+      case 12:
+      case 21:
+        index = new int[]{0};
+        break;
+    }
+
+    if(index != null) {
+      for(int n = 0; n < index.length; n++) {
+        Short id = (Short)myObjectIds.elementAt(i + index[n]);
+        Point p = Constants.getNodeLocation(id.shortValue());
+        Short val = (Short)osf2.neededValues.elementAt(nv_offset);
+        nv_offset++;
+        myObjects.addElement(new Objects(p.x, p.y, val.shortValue()));        
       }
     }
 
     Vector myObects_sorted = new Vector();
-    for(int c=0; c<myObjects.size(); c++){
+    for(int c=0; c<myObjects.size(); c++) {
       myObects_sorted.addElement(myObjects.elementAt(c));
     }
     //sort the objects, add the rectangles
     //Collections.sort(myObects_sorted);
     myObects_sorted=doSelectionSortvobj(myObects_sorted);
-    for(int c=0; c<myObjects.size(); c++){
+    for(int c=0; c<myObjects.size(); c++) {
       Objects obj = (Objects) myObects_sorted.elementAt(c);
       myRectangles.addElement(new Rectangle((short)Math.max(0, obj.x - coverage.width/2),
                                             (short)Math.max(0, obj.y - coverage.height/2),
@@ -440,24 +557,52 @@ public class DistributedMaxRS {
     int limit = (coverage.height/Constants.GAP_HEIGHT)<=3?(coverage.height/Constants.GAP_HEIGHT):3;
     short j=0;
     for(int k=0; k<limit; k++){
-      Objects obj = (Objects)myObjects.elementAt(j++);
-      values.addElement(new Short(obj.weight));
-      obj = (Objects)myObjects.elementAt(j++);
-      values.addElement(new Short(obj.weight));
-      obj = (Objects)myObjects.elementAt(j++);
-      values.addElement(new Short(obj.weight));
+      Objects obj = null;
+      switch(k) { // cluster 2 height
+        case 1:
+          for(; j < 2; j++) {
+            obj = (Objects)myObjects.elementAt(j);
+            values.addElement(new Short(obj.weight));
+          }
+          break;
+        case 2:
+            obj = (Objects)myObjects.elementAt(2);
+            values.addElement(new Short(obj.weight));
+          break;
+        case 3:
+          for(; j < 2; j++) {
+            obj = (Objects)myObjects.elementAt(j+3);
+            values.addElement(new Short(obj.weight));
+          }
+          break;
+      }
     }
-
+    // 0 2 4 6 8
     Vector values1 = new Vector();
     j=2;
     limit = (coverage.width/Constants.GAP_WIDTH)<=3?(coverage.width/Constants.GAP_WIDTH):3;
     for(int k=0; k<limit; k++, j--){
-      Objects obj = (Objects)myObjects.elementAt(j);
-      values1.addElement(new Short(obj.weight));
-      obj = (Objects)myObjects.elementAt(j+3);
-      values1.addElement(new Short(obj.weight));
-      obj = (Objects)myObjects.elementAt(j+6);
-      values1.addElement(new Short(obj.weight));
+      Objects obj = null;
+      switch(k) { // cluster 2 width
+        case 1:
+          for(int l = 1; l < 5; l = l + 3) {
+            obj = (Objects)myObjects.elementAt(l);
+            values.addElement(new Short(obj.weight));
+          }
+          break;
+        case 2:
+          for(int l = 2; l < 5; l = l + 3) {
+            obj = (Objects)myObjects.elementAt(l);
+            values.addElement(new Short(obj.weight));
+          }
+          break;
+        case 3:
+          for(int l = 0; l < 5; l = l + 3) {
+            obj = (Objects)myObjects.elementAt(l);
+            values.addElement(new Short(obj.weight));
+          }
+          break;
+      }
     }
 
     DistSlabfile[] result = new DistSlabfile[2];
@@ -467,7 +612,7 @@ public class DistributedMaxRS {
     return result;
   }
 
-  public static DistSlabfile processingC_0(DistSlabfile osf){
+  public static DistSlabfile processingC_0(DistSlabfile osf) {
     Vector myObjectIds = new Vector();
     Vector myObjects = new Vector();
     Vector  myRectangles = new Vector();
@@ -527,17 +672,31 @@ public class DistributedMaxRS {
        System.out.println(h.h+"-----"+h.l+ " "+h.r+" "+h.score);
        }*/
 
-
     Vector values = new Vector();
     short j=2;
     int limit = (coverage.width/Constants.GAP_WIDTH)<=3?(coverage.width/Constants.GAP_WIDTH):3;
     for(int k=0; k<limit; k++, j--){
-      Objects obj = (Objects)myObjects.elementAt(j);
-      values.addElement(new Short(obj.weight));
-      obj = (Objects)myObjects.elementAt(j+3);
-      values.addElement(new Short(obj.weight));
-      obj = (Objects)myObjects.elementAt(j+6);
-      values.addElement(new Short(obj.weight));
+      Objects obj = null;
+      switch(k) { // width
+        case 1:
+          for(int l = 1; l < 5; l = l + 3) {
+            obj = (Objects)myObjects.elementAt(l);
+            values.addElement(new Short(obj.weight));
+          }
+          break;
+        case 2:
+          for(int l = 2; l < 5; l = l + 3) {
+            obj = (Objects)myObjects.elementAt(l);
+            values.addElement(new Short(obj.weight));
+          }
+          break;
+        case 3:
+          for(int l = 0; l < 5; l = l + 3) {
+            obj = (Objects)myObjects.elementAt(l);
+            values.addElement(new Short(obj.weight));
+          }
+          break;
+      }
     }
 
     DistSlabfile result = new DistSlabfile(hintervals, values);
@@ -554,7 +713,6 @@ public class DistributedMaxRS {
     short coverage_width=(short)Math.max((Constants.getNodeLocation((short)21).x-(coverage.width/2)), 0);
 
     initializeC_3(myObjectIds, myObjects, myRectangles, osf, coverage_width);
-
 
     Vector aListOfX1 = new Vector();
     for(int i = 0; i < myRectangles.size(); i++)
@@ -603,18 +761,62 @@ public class DistributedMaxRS {
     short j=0;
     int limit = (coverage.height/Constants.GAP_HEIGHT)<=3?(coverage.height/Constants.GAP_HEIGHT):3;
     for(int k=0; k<limit; k++){
-      Objects obj = (Objects)myObjects.elementAt(j++);
-      values.addElement(new Short(obj.weight));
-      obj = (Objects)myObjects.elementAt(j++);
-      values.addElement(new Short(obj.weight));
-      obj = (Objects)myObjects.elementAt(j++);
-      values.addElement(new Short(obj.weight));
+      Objects obj = null;
+      switch(k) { // cl 3 height
+        case 1:
+          for(; j < 2; j++) {
+            obj = (Objects)myObjects.elementAt(j);
+            values.addElement(new Short(obj.weight));
+          }
+          break;
+        case 2:
+          obj = (Objects)myObjects.elementAt(2);
+          values.addElement(new Short(obj.weight));
+          break;
+        case 3:
+          for(; j < 2; j++) {
+            obj = (Objects)myObjects.elementAt(j+3);
+            values.addElement(new Short(obj.weight));
+          }
+          break;
+      }
     }
 
     int limit2 = (coverage.width/Constants.GAP_WIDTH)<=3?(coverage.width/Constants.GAP_WIDTH):3;
-    for(int i=0; i<limit2; i++){
-      for(j=0;j<limit; j++){
-        Objects obj = (Objects)myObjects.elementAt(9+(i*3+j));
+    int highwidth = limit*10 + limit2;
+    int[] index = null;
+    switch(highwidth) { // cluster 3 
+      case 0:
+        break;
+      case 13:
+        index = new int[]{0, 3};
+        break;
+      case 22:
+        index = new int[]{0, 2};
+        break;
+      case 23:
+        index = new int[]{0, 2, 3};
+        break;
+      case 31:
+        index = new int[]{0, 1};
+        break;
+      case 32:
+        index = new int[]{0, 1, 2};
+        break;
+      case 33:
+        index = new int[]{0, 1, 2, 3, 4};
+        break;
+      case 11:
+      case 12:
+      case 21:
+        index = new int[]{0};
+        break;
+    }
+
+    if(index != null) {
+      for(int i = 0; i < index.length; i++) {
+        int h = i + Constants.NUM_NODE_CLUSTER;
+        Objects obj = (Objects)myObjects.elementAt(index[h]);
         values.addElement(new Short(obj.weight));
       }
     }
@@ -642,9 +844,7 @@ public class DistributedMaxRS {
       Rectangle rect = (Rectangle)myRectangles.elementAt(i);
       aListOfX1.addElement(new Short(rect.x1));
       aListOfX1.addElement(new Short(rect.x2));
-    }
-
-    //Collections.sort(aListOfX1);
+    }    //Collections.sort(aListOfX1);
     aListOfX1=doSelectionSortvshort(aListOfX1);
     Vector aListOfX = new Vector(); // xs in python code
     for(int c=0; c<aListOfX1.size(); c++){
