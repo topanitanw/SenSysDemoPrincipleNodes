@@ -409,16 +409,15 @@ public class Tiny_connection_pri
     // return asap.
     // this if statement assumes that if an address is 
     // sun spot's, return -1. (
-    Short val = null;
+    int val = -1;
+    String addr2 = addr;
     if (addr.length() > 4) 
-      val = (Short) telosb_nodes.get(last_4addr(addr));
-    else 
-      val = (Short) telosb_nodes.get(last_4addr(addr));
+      addr2 = last_4addr(addr);
     
-    if (val == null)
-      return -1;
-    else 
-      return val.shortValue();
+    if(telosb_nodes.containsKey(addr2))
+      val = ((Short) telosb_nodes.get(last_4addr(addr))).shortValue();
+    
+    return val;
   }
   
   public String last_4addr(String addr) {
