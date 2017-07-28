@@ -39,4 +39,8 @@ public class Objects
     else
       return -1; // less then the one we are checking 
   }
+  
+  public String toString(Objects o) {
+    return "x: " + o.x + " y: " + o.y + " w: " + o.weight;
+  }
 }

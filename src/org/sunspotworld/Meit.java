@@ -79,7 +79,7 @@ public class Meit
     if(root == null)
       return;
 
-    System.out.println(root);
+    System.out.println("preOrderTraverse : root: " + root);
     this.preOrderTraverse(root.left_child);
     this.preOrderTraverse(root.right_child);
   }
@@ -471,6 +471,7 @@ public class Meit
   public IntervalTree incToNodeL(short l, short r, short h, short weight,
                                  IntervalTree root)
   {
+    System.out.println("root: " + root);
     if(root.window != null)
       // left overlapping 
       // a window [a,b] overlap with the left part of interval

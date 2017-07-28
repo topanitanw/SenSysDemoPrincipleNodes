@@ -32,4 +32,18 @@ public class IntervalTree
     this.excess = 0;
     this.father = father;
   }
+  
+  public String toString() {
+    String txt = "|dis: " + this.discriminant;
+    if(this.left_child != null)
+      txt += " left_child: " + this.left_child.discriminant;
+    else 
+      txt += " left_child: null";
+            
+    if(this.right_child != null)
+      txt += " right_child: " + this.right_child.discriminant + "|\n";
+    else 
+      txt += " right_child: null|\n";
+    return txt;
+  }  
 }

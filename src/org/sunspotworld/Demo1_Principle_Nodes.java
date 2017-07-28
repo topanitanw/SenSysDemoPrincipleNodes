@@ -482,15 +482,15 @@ public class Demo1_Principle_Nodes extends MIDlet {
       while(true) {
         try {
           if((pck_type1 == 5) || (pck_type1 == 7)) { // cluster 2
-            threadMessage("Periodic Update: sleep dis: " 
+            threadMessage("Periodic Update: sleep cen: " 
                           + update_period_cen);
-            Thread.sleep(update_period_cen * 1000);
+            Thread.sleep(Math.abs(update_period_cen * 1000));
             sensor_reading();
             update_centralized();
           
-            threadMessage("Periodic Update: sleep cen: " 
+            threadMessage("Periodic Update: sleep dis: " 
                         + update_period_dis);
-            Thread.sleep(update_period_dis * 900);    // do a thread sleep in millisecond
+            Thread.sleep(Math.abs(update_period_dis * 900));    // do a thread sleep in millisecond
 
             DistSlabfile[] slab_values_to_sent = DistributedMaxRS.processingC_2();  
             update_distributed(pck_type1, slab_values_to_sent[0]);
